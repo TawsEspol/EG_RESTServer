@@ -37,6 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.gis',
+    'espolguide_app',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -78,6 +80,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'espolguide_db',
+        'USER': 'guiders',
+        'PASSWORD': '0000',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
