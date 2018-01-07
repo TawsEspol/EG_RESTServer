@@ -12,8 +12,8 @@ bloques_mapping = {
     'area_m2' : 'AREA_M2',
     'geom' : 'MULTIPOLYGON',
 }
-bloques_shp = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), 'data/Bloques', 'BLOQUES_INGENIERIA.shp'),
+bloques_shp = os.path.abspath(os.path.join(os.path.dirname(__file__), 
+	'data/Bloques', 'BLOQUES_INGENIERIA.shp'),
 )
 
 def run(verbose=True):

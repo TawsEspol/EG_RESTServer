@@ -10,6 +10,7 @@ router = DefaultRouter()
 #router.register(r')
 
 urlpatterns = [
-	url('^$',views.principal),
+	url(r'^$',views.principal),
+	url(r'^bloques/',views.obtenerBloques,name='obtenerBloques')
 ]
 

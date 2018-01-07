@@ -1,11 +1,11 @@
 from django.contrib.gis.db import models
 
 class Bloques(models.Model):
-    codigo = models.CharField(max_length=10)
+    codigo = models.CharField(max_length=60)
     nombre = models.CharField(max_length=80)
-    unidad = models.CharField(max_length=10)
-    bloque = models.CharField(max_length=10)
-    tipo = models.CharField(max_length=20)
+    unidad = models.CharField(max_length=60)
+    bloque = models.CharField(max_length=60)
+    tipo = models.CharField(max_length=60)
     descripcio = models.CharField(max_length=100)
     area_m2 = models.FloatField()
     geom = models.MultiPolygonField(srid=4236)
