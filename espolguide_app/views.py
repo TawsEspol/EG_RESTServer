@@ -6,6 +6,8 @@ import json
 from django.db import connection
 from .models import *
 from django.core.serializers import serialize
+from pyproj import Proj, transform
+
 
 # Create your views here.
 def obtenerBloques(request):
@@ -39,6 +41,7 @@ def obtenerBloques(request):
 	d["type"]="FeatureCollection"
 	return HttpResponse(json.dumps(d),content_type='application/json')
 
+<<<<<<< HEAD
 
 def obtenerInformacionBloques(request):
 	d={}
@@ -53,3 +56,11 @@ def obtenerInformacionBloques(request):
 	d["features"]=lista
 	d["type"]="FeatureCollection"
 	return HttpResponse(json.dumps(d),content_type='application/json')
+=======
+def transformarCoordenadas(coord1,coord2):
+	inProj = Proj(init='epsg:3857')
+	outProj = Proj(init='epsg:4326')
+	x1,y1 = -11705274.6374,4826473.6922
+	x2,y2 = transform(inProj,outProj,x1,y1)
+	print x2,y2
+>>>>>>> be6c436d30c34e782854592f0714009a63c1f4c4
