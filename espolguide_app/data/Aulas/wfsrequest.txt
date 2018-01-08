@@ -1,0 +1,1 @@
+http://sigeoespol.cepra.cedia.org.ec:8080/geoserver/DATA/ows?service=WFS&version=1.0.0&request=GetFeature&typeName=DATA:CEAACEA_AULAS&maxFeatures=50&outputFormat=SHAPE-ZIP
