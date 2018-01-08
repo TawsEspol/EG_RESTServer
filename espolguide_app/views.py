@@ -11,7 +11,7 @@ from django.core.serializers import serialize
 def obtenerBloques(request):
 
 	d={}
-	d["type"]="FeatureCollection"
+	#d["type"]="FeatureCollection"
 	lista=[]
 	bloques=Bloques.objects.all()
 	for b in bloques:
@@ -25,12 +25,16 @@ def obtenerBloques(request):
 		rango=len(b.geom[0][0])
 		for i in range (rango):
 			tupla=b.geom[0][0][i]
+			#print(tupla[0])
 			coordenadas=[]
 			coordenadas.append(tupla[0])
 			coordenadas.append(tupla[1])
 			coordenadas_media.append(coordenadas)
+		#print("SE ACABO EL POLIGONO")
 		coordenadas_externa.append(coordenadas_media)
 		geometry["coordinates"]=coordenadas_externa
+		feature_element["geometry"]=geometry
 		lista.append(feature_element)
 	d["features"]=lista
+	d["type"]="FeatureCollection"
 	return HttpResponse(json.dumps(d),content_type='application/json')
