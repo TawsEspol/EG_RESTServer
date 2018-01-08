@@ -38,3 +38,18 @@ def obtenerBloques(request):
 	d["features"]=lista
 	d["type"]="FeatureCollection"
 	return HttpResponse(json.dumps(d),content_type='application/json')
+
+
+def obtenerInformacionBloques(request):
+	d={}
+	#d["type"]="FeatureCollection"
+	lista=[]
+	bloques=Bloques.objects.all()
+	for b in bloques:
+		feature_element={}
+		feature_element["type"]="Feature"
+		feature_element["properties"]={"codigo":b.codigo,"nombre":b.nombre,"unidad":b.unidad,"bloque":b.bloque,"tipo":b.tipo,"descripcio":b.descripcio}
+		lista.append(feature_element)
+	d["features"]=lista
+	d["type"]="FeatureCollection"
+	return HttpResponse(json.dumps(d),content_type='application/json')
