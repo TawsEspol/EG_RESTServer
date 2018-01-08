@@ -10,7 +10,7 @@ from . import views
 #router.register(r')
 
 urlpatterns = [
-	url(r'^$',views.principal),
+	#url(r'^$',views.principal),
 	url(r'^bloques/',views.obtenerBloques,name='obtenerBloques'),
 ]
 

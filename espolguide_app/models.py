@@ -9,7 +9,7 @@ class Bloques(models.Model):
     descripcio = models.CharField(max_length=100)
     area_m2 = models.FloatField()
     geom = models.MultiPolygonField(srid=4236)
-    objects = models.GeoManager()
+    objects = models.Manager()
 
 
     # Returns the string representation of the model.
