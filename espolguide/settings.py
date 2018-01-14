@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.gis',
     'espolguide_app',
+    
 ]
 
 MIDDLEWARE = [
