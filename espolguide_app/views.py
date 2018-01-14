@@ -1,4 +1,5 @@
 import json
+from osgeo import osr
 from django.http import HttpResponse
 from django.db import connection
 from pyproj import Proj, transform
@@ -28,12 +29,18 @@ def obtener_bloques(request):
         rango = len(b.geom[0][0])
         for i in range(rango):
             tupla = b.geom[0][0][i]
+            wgs84 = osr.SpatialReference()
+            wgs84.ImportFromEPSG(4326)
+            inp = osr.SpatialReference()
+            inp.ImportFromEPSG(32717)
+            transformation = osr.CoordinateTransformation(inp, wgs84)
+            tupla_transformada = transformation.TransformPoint(tupla[0], tupla[1])
             # print(tupla[0])
             coordenadas = []
-            coordenadas.append(tupla[0])
-            coordenadas.append(tupla[1])
+            coordenadas.append(tupla_transformada[1])
+            coordenadas.append(tupla_transformada[0])
             coordenadas_media.append(coordenadas)
-        #print("SE ACABO EL POLIGONO")
+        # print("SE ACABO EL POLIGONO")
         coordenadas_externa.append(coordenadas_media)
         geometry["coordinates"] = coordenadas_externa
         feature_element["geometry"] = geometry
