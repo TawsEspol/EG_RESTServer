@@ -17,11 +17,12 @@ def obtener_bloques(request):
     # d["type"]="FeatureCollection"
     lista = []
     bloques = Bloques.objects.all()
+    numero = 1
     for b in bloques:
         feature_element = {}
         feature_element["type"] = "Feature"
-        feature_element["properties"] = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad,
-                                         "bloque": b.bloque, "tipo": b.tipo, "descripcio": b.descripcio, "area_m2": b.area_m2}
+        feature_element["identificador"] = "Bloque"+str(numero)
+        numero += 1
         geometry = {}
         geometry["type"] = "Polygon"
         coordenadas_externa = []
@@ -34,8 +35,7 @@ def obtener_bloques(request):
             inp = osr.SpatialReference()
             inp.ImportFromEPSG(32717)
             transformation = osr.CoordinateTransformation(inp, wgs84)
-            tupla_transformada = transformation.TransformPoint(tupla[
-                                                               0], tupla[1])
+            tupla_transformada = transformation.TransformPoint(tupla[0], tupla[1])
             # print(tupla[0])
             coordenadas = []
             coordenadas.append(tupla_transformada[1])
@@ -59,9 +59,12 @@ def obtener_informacion_bloques(request):
     # d["type"]="FeatureCollection"
     lista = []
     bloques = Bloques.objects.all()
+    numero = 1
     for b in bloques:
         feature_element = {}
         feature_element["type"] = "Feature"
+        feature_element["identificador"] = "Bloque"+str(numero)
+        numero += 1
         feature_element["properties"] = {"codigo": b.codigo, "nombre": b.nombre,
                                          "unidad": b.unidad, "bloque": b.bloque, "tipo": b.tipo, "descripcio": b.descripcio}
         lista.append(feature_element)
@@ -75,8 +78,6 @@ def info_bloque(request, codigo):
     # d["type"]="FeatureCollection"
     lista = []
     b = Bloques.objects.filter(codigo=codigo)
-    for b1 in b:
-        print(b1.tipo)
     feature_element = {}
     feature_element["type"] = "Feature"
     feature_element["properties"] = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad,
