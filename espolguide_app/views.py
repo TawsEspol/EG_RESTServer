@@ -111,15 +111,18 @@ def info_bloque(request, codigo):
 
 
 def nombres_bloques(request):
-    diccionario = {}
+    feature_element = {}
     # d["type"]="FeatureCollection"
     bloques = Bloques.objects.all()
+    numero = 1
     for b in bloques:
+        diccionario = {}
+        diccionario["NombreOficial"] = b.codigo
         lista = []
-        if b.codigo not in diccionario:
-            diccionario[b.codigo] = set()
         if b.nombre != "":
             lista.append(b.nombre)
         lista.append(b.tipo)
-        diccionario[b.codigo] = lista
-    return HttpResponse(json.dumps(diccionario), content_type='application/json')
+        diccionario["NombresAlternativos"] = lista
+        feature_element["Bloque"+str(numero)] =diccionario 
+        numero += 1
+    return HttpResponse(json.dumps(feature_element), content_type='application/json')
