@@ -1,4 +1,5 @@
-from django.conf.urls import include, url
+'''Urls, archivo para  definir las urls con las que se accederan a los view'''
+from django.conf.urls import  url
 from . import views
 APP_NAME = 'espolguide_app'
 urlpatterns = [

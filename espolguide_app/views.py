@@ -1,18 +1,16 @@
+'''Views, archivo para el backend del servidor'''
 import json
 from osgeo import osr
 from django.http import HttpResponse
-from django.db import connection
-from pyproj import Proj, transform
 from .models import Bloques
 
 
 # Create your views here.
 
 
-'''Funcion para poder obtener la informacion de los bloques incluido los shapefiles o poligonos para ubicarlos en la app'''
-
-
 def obtener_bloques(request):
+    '''Funcion para poder obtener la informacion de los bloques incluido los shapefiles o 
+    poligonos para ubicarlos en la app'''
     diccionario = {}
     # d["type"]="FeatureCollection"
     lista = []
@@ -51,10 +49,11 @@ def obtener_bloques(request):
     return HttpResponse(json.dumps(diccionario), content_type='application/json')
 
 
-'''Funcion para obtener solo informacion de cloques sin incluir shapefiles'''
+
 
 
 def obtener_informacion_bloques(request):
+    '''Funcion para obtener solo informacion de cloques sin incluir shapefiles'''
     diccionario = {}
     # d["type"]="FeatureCollection"
     lista = []
@@ -65,8 +64,11 @@ def obtener_informacion_bloques(request):
         feature_element["type"] = "Feature"
         feature_element["identificador"] = "Bloque"+str(numero)
         numero += 1
-        feature_element["properties"] = {"codigo": b.codigo, "nombre": b.nombre,
-                                         "unidad": b.unidad, "bloque": b.bloque, "tipo": b.tipo, "descripcio": b.descripcio}
+        informacion = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad}
+        informacion["bloque"] = b.bloque
+        informacion["tipo"] = b.tipo
+        informacion["descripcio"] = b.descripcio
+        feature_element["properties"] = informacion
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
@@ -74,14 +76,18 @@ def obtener_informacion_bloques(request):
 
 
 def info_bloque(request, codigo):
+    '''FUncion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
     diccionario = {}
     # d["type"]="FeatureCollection"
     lista = []
     b = Bloques.objects.filter(codigo=codigo)
     feature_element = {}
     feature_element["type"] = "Feature"
-    feature_element["properties"] = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad,
-                                     "bloque": b.bloque, "tipo": b.tipo, "descripcio": b.descripcio, "area_m2": b.area_m2}
+    informacion = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad}
+    informacion["bloque"] = b.bloque
+    informacion["tipo"] = b.tipo
+    informacion["descripcio"] = b.descripcio
+    feature_element["properties"] = informacion
     geometry = {}
     geometry["type"] = "Polygon"
     coordenadas_externa = []
@@ -111,6 +117,7 @@ def info_bloque(request, codigo):
 
 
 def nombres_bloques(request):
+    '''Funcion que retorna los nombres oficiales y alternativos de los bloques '''
     feature_element = {}
     # d["type"]="FeatureCollection"
     bloques = Bloques.objects.all()
@@ -121,8 +128,10 @@ def nombres_bloques(request):
         lista = []
         if b.nombre != "":
             lista.append(b.nombre)
-        lista.append(b.tipo)
+        lista.append(b.descripcio)
         diccionario["NombresAlternativos"] = lista
-        feature_element["Bloque"+str(numero)] =diccionario 
+        diccionario["tipo"] = b.tipo
+        feature_element["Bloque"+str(numero)] = diccionario
         numero += 1
     return HttpResponse(json.dumps(feature_element), content_type='application/json')
+
