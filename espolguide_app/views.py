@@ -7,7 +7,6 @@ from .models import Bloques
 
 # Create your views here.
 
-
 def obtener_bloques(request):
     '''Funcion para poder obtener la informacion de los bloques incluido los shapefiles o 
     poligonos para ubicarlos en la app'''
@@ -75,12 +74,12 @@ def obtener_informacion_bloques(request):
     return HttpResponse(json.dumps(diccionario), content_type='application/json')
 
 
-def info_bloque(request, codigo):
+def info_bloque(request, pk):
     '''FUncion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
     diccionario = {}
     # d["type"]="FeatureCollection"
     lista = []
-    b = Bloques.objects.filter(codigo=codigo)
+    b = Bloques.objects.get(pk=pk)
     feature_element = {}
     feature_element["type"] = "Feature"
     informacion = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad}
@@ -106,6 +105,7 @@ def info_bloque(request, codigo):
         coordenadas.append(tupla_transformada[1])
         coordenadas.append(tupla_transformada[0])
         coordenadas_media.append(coordenadas)
+        break
     # print("SE ACABO EL POLIGONO")
     coordenadas_externa.append(coordenadas_media)
     geometry["coordinates"] = coordenadas_externa
@@ -134,4 +134,3 @@ def nombres_bloques(request):
         feature_element["Bloque"+str(numero)] = diccionario
         numero += 1
     return HttpResponse(json.dumps(feature_element), content_type='application/json')
-
