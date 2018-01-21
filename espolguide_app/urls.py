@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^obtenerInformacionBloques/', views.obtener_informacion_bloques),
     url(r'^infoBloque/(?P<pk>[\w|\W]+)$', views.info_bloque),
     url(r'^nombresAlternativo/', views.nombres_bloques),
+    url(r'^fotoBloque/(?P<codigo>[\w|\W]+)$', views.imagen_bloque),
 ]

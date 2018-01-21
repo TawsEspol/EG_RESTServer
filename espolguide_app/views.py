@@ -3,6 +3,7 @@ import json
 from osgeo import osr
 from django.http import HttpResponse
 from .models import Bloques
+from PIL import Image
 
 
 # Create your views here.
@@ -134,3 +135,16 @@ def nombres_bloques(request):
         feature_element["Bloque"+str(numero)] = diccionario
         numero += 1
     return HttpResponse(json.dumps(feature_element), content_type='application/json')
+
+def imagen_bloque(request,codigo):
+    # resp = HttpResponse(content_type="text/html")
+    # # imagen_file = file('img/'+str(codigo)+'.jpg')
+    # # encoded_string = base64.b64encode(image_file.read())
+    # resp.write("<img src='img/%s.jpg'>"%str(codigo))
+    # return resp
+    response = HttpResponse(content_type="image/jpeg")
+    img = Image.open('espolguide_app/img/'+str(codigo)+'.jpg')
+    img.save(response,'jpeg')
+    return response
+
+
