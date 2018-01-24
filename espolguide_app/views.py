@@ -1,10 +1,9 @@
+#-*- encoding: latin-1 -*-
 '''Views, archivo para el backend del servidor'''
 import json
 from osgeo import osr
 from django.http import HttpResponse
 from .models import Bloques
-from PIL import Image
-
 
 # Create your views here.
 
@@ -46,7 +45,7 @@ def obtener_bloques(request):
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario,ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 
 
@@ -67,12 +66,11 @@ def obtener_informacion_bloques(request):
         informacion = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad}
         informacion["bloque"] = b.bloque
         informacion["tipo"] = b.tipo
-        informacion["descripcio"] = b.descripcio
         feature_element["properties"] = informacion
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario,ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 
 def info_bloque(request, pk):
@@ -114,7 +112,7 @@ def info_bloque(request, pk):
     lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario,ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 
 def nombres_bloques(request):
@@ -134,7 +132,7 @@ def nombres_bloques(request):
         diccionario["tipo"] = b.tipo
         feature_element["Bloque"+str(numero)] = diccionario
         numero += 1
-    return HttpResponse(json.dumps(feature_element), content_type='application/json')
+    return HttpResponse(json.dumps(feature_element,ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 def imagen_bloque(request,codigo):
     # resp = HttpResponse(content_type="text/html")
