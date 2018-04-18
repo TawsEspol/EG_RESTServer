@@ -5,12 +5,9 @@ from osgeo import osr
 from PIL import Image
 from django.http import HttpResponse
 from .models import Bloques
-<<<<<<< HEAD
-
-=======
->>>>>>> ced7774f20a7b439fd455f5a862b5d1a57d9cf75
 
 # Create your views here.
+
 
 def transformar_coordenada(latitud, longitud):
     '''Funcion para transformar el sistema de coordenadas'''
@@ -54,10 +51,8 @@ def obtener_bloques(request):
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario,ensure_ascii=False).encode("latin1"), content_type='application/json')
-
-
-
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"),
+                        content_type='application/json')
 
 
 def obtener_informacion_bloques(request):
@@ -72,21 +67,16 @@ def obtener_informacion_bloques(request):
         feature_element["type"] = "Feature"
         feature_element["identificador"] = "Bloque"+str(numero)
         numero += 1
-<<<<<<< HEAD
-        informacion = {"codigo": bloque.codigo, "nombre": bloque.nombre, "unidad": bloque.unidad}
+        informacion = {"codigo": bloque.codigo,
+                       "nombre": bloque.nombre, "unidad": bloque.unidad}
         informacion["bloque"] = bloque.bloque
         informacion["tipo"] = bloque.tipo
         informacion["descripcio"] = bloque.descripcio
-=======
-        informacion = {"codigo": b.codigo, "nombre": b.nombre, "unidad": b.unidad}
-        informacion["bloque"] = b.bloque
-        informacion["tipo"] = b.tipo
->>>>>>> ced7774f20a7b439fd455f5a862b5d1a57d9cf75
         feature_element["properties"] = informacion
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario,ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 
 def info_bloque(request, primary_key):
@@ -97,7 +87,8 @@ def info_bloque(request, primary_key):
     bloque = Bloques.objects.get(pk=primary_key)
     feature_element = {}
     feature_element["type"] = "Feature"
-    informacion = {"codigo": bloque.codigo, "nombre": bloque.nombre, "unidad": bloque.unidad}
+    informacion = {"codigo": bloque.codigo,
+                   "nombre": bloque.nombre, "unidad": bloque.unidad}
     informacion["bloque"] = bloque.bloque
     informacion["tipo"] = bloque.tipo
     informacion["descripcio"] = bloque.descripcio
@@ -123,7 +114,7 @@ def info_bloque(request, primary_key):
     lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario,ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 
 def nombres_bloques(request):
@@ -143,7 +134,8 @@ def nombres_bloques(request):
         diccionario["tipo"] = bloque.tipo
         feature_element["Bloque"+str(numero)] = diccionario
         numero += 1
-    return HttpResponse(json.dumps(feature_element,ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type='application/json')
+
 
 def imagen_bloque(request, codigo):
     '''Funcion que genera la ruta para la imagen de los bloques '''
