@@ -1,2 +1,0 @@
-postgres==10.3
-postgis==2.3.3

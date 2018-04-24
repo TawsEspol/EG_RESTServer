@@ -1,0 +1,7 @@
+django==2.0.1
+gdal
+json
+psycopg2
+psycopg2-binary
+Pillow
+django-dotenv==1.4.1
