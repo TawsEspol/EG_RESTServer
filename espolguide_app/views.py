@@ -1,7 +1,7 @@
 #-*- encoding: latin-1 -*-
 '''Views, archivo para el backend del servidor'''
 import json
-from osgeo import osr
+#from osgeo import osr
 from PIL import Image
 from django.http import HttpResponse
 from .models import Bloques
@@ -9,14 +9,14 @@ from .models import Bloques
 # Create your views here.
 
 
-def transformar_coordenada(latitud, longitud):
-    '''Funcion para transformar el sistema de coordenadas'''
-    wgs84 = osr.SpatialReference()
-    wgs84.ImportFromEPSG(4326)
-    inp = osr.SpatialReference()
-    inp.ImportFromEPSG(32717)
-    transformation = osr.CoordinateTransformation(inp, wgs84)
-    return transformation.TransformPoint(latitud, longitud)
+# def transformar_coordenada(latitud, longitud):
+#     '''Funcion para transformar el sistema de coordenadas'''
+#     wgs84 = osr.SpatialReference()
+#     wgs84.ImportFromEPSG(4326)
+#     inp = osr.SpatialReference()
+#     inp.ImportFromEPSG(32717)
+#     transformation = osr.CoordinateTransformation(inp, wgs84)
+#     return transformation.TransformPoint(latitud, longitud)
 
 
 def obtener_bloques(request):
@@ -38,11 +38,11 @@ def obtener_bloques(request):
         rango = len(bloque.geom[0][0])
         for i in range(rango):
             tupla = bloque.geom[0][0][i]
-            tupla_transformada = transformar_coordenada(tupla[0], tupla[1])
+            #tupla_transformada = transformar_coordenada(tupla[0], tupla[1])
             # print(tupla[0])
             coordenadas = []
-            coordenadas.append(tupla_transformada[1])
-            coordenadas.append(tupla_transformada[0])
+            coordenadas.append(tupla[1])
+            coordenadas.append(tupla[0])
             coordenadas_media.append(coordenadas)
         # print("SE ACABO EL POLIGONO")
         coordenadas_externa.append(coordenadas_media)
@@ -81,6 +81,7 @@ def obtener_informacion_bloques(request):
 
 def info_bloque(request, primary_key):
     '''FUncion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
+    print(primary_key)
     diccionario = {}
     # d["type"]="FeatureCollection"
     lista = []
@@ -100,11 +101,11 @@ def info_bloque(request, primary_key):
     rango = len(bloque.geom[0][0])
     for i in range(rango):
         tupla = bloque.geom[0][0][i]
-        tupla_transformada = transformar_coordenada(tupla[0], tupla[1])
+        #tupla_transformada = transformar_coordenada(tupla[0], tupla[1])
         # print(tupla[0])
         coordenadas = []
-        coordenadas.append(tupla_transformada[1])
-        coordenadas.append(tupla_transformada[0])
+        coordenadas.append(tupla[1])
+        coordenadas.append(tupla[0])
         coordenadas_media.append(coordenadas)
         break
     # print("SE ACABO EL POLIGONO")

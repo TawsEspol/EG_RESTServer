@@ -8,7 +8,7 @@ class Bloques(models.Model):
     tipo = models.CharField(max_length=60)
     descripcio = models.CharField(max_length=100)
     area_m2 = models.FloatField()
-    geom = models.MultiPolygonField(srid=4236)
+    geom = models.MultiPolygonField(srid=4326)
     objects = models.Manager()
 
 

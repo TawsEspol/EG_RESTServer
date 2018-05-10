@@ -14,7 +14,7 @@ BLOQUES_MAPPING = {
     'geom': 'MULTIPOLYGON',
 }
 BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           'data/Bloques', 'BLOQUES_INGENIERIA.shp'),)
+                                           'data/Bloques', 'bloques-convertidos.shp'),)
 
 
 def run(verbose=True):
@@ -24,3 +24,4 @@ def run(verbose=True):
         transform=False, encoding='iso-8859-1',
     )
     layer_map.save(strict=True, verbose=verbose)
+
