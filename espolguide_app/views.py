@@ -80,7 +80,7 @@ def obtener_informacion_bloques(request):
 
 
 def info_bloque(request, primary_key):
-    '''FUncion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
+    '''Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
     print(primary_key)
     diccionario = {}
     # d["type"]="FeatureCollection"
