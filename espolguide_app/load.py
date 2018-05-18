@@ -21,7 +21,7 @@ def run(verbose=True):
     '''Funcion para cargar los shapefiles'''
     layer_map = LayerMapping(
         Bloques, BLOQUES_SHP, BLOQUES_MAPPING,
-        transform=False, encoding='iso-8859-1',
+        transform=False, encoding='latin1',
     )
     layer_map.save(strict=True, verbose=verbose)
 
