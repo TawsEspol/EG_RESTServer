@@ -124,9 +124,11 @@ def nombres_bloques(request):
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type='application/json')
 
 
-def imagen_bloque(request, codigo):
+def show_photo(request, codigo):
     '''Funcion que genera la ruta para la imagen de los bloques '''
+    bloq= Bloques.objects.get(id=codigo)
+    nombre = bloq.bloque
     response = HttpResponse(content_type="image/jpeg")
-    img = Image.open('espolguide_app/img/'+str(codigo)+'.jpg')
+    img = Image.open('espolguide_app/img/'+nombre+'/'+nombre+'.JPG')
     img.save(response, 'jpeg')
     return response
