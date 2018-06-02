@@ -127,15 +127,15 @@ def nombres_bloques(request):
 def show_photo(request, codigo):
     '''Funcion que genera la ruta para la imagen de los bloques '''
     try:
-        bloq= Bloques.objects.get(id=codigo) 
-        nombre = bloq.bloque
+        #bloq= Bloques.objects.get(id=codigo) 
+        nombre = codigo
         response = HttpResponse(content_type="image/jpeg")
         img = Image.open('espolguide_app/img/'+nombre+'/'+nombre+'.JPG')
         img.save(response, 'jpeg')
         return response
     except Exception as e:
-        bloq= Bloques.objects.get(id=codigo) 
-        nombre = bloq.bloque
+        # bloq= Bloques.objects.get(id=codigo) 
+        nombre = codigo
         response = HttpResponse(content_type="image/png")
         img = Image.open('espolguide_app/img/'+"espol"+'/'+"espol"+'.png')
         img.save(response, 'png')
