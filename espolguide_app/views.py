@@ -69,7 +69,8 @@ def obtener_informacion_bloques(request):
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
+        , content_type='application/json')
 
 
 def info_bloque(request, primary_key):
@@ -104,7 +105,8 @@ def info_bloque(request, primary_key):
     lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
+        , content_type='application/json')
 
 
 def nombres_bloques(request):
@@ -121,12 +123,24 @@ def nombres_bloques(request):
         diccionario["NombresAlternativos"] = lista
         diccionario["tipo"] = bloque.tipo
         feature_element["Bloque"+str(bloque.id)] = diccionario
-    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1")\
+        , content_type='application/json')
 
 
-def imagen_bloque(request, codigo):
+def show_photo(request, codigo):
     '''Funcion que genera la ruta para la imagen de los bloques '''
-    response = HttpResponse(content_type="image/jpeg")
-    img = Image.open('espolguide_app/img/'+str(codigo)+'.jpg')
-    img.save(response, 'jpeg')
-    return response
+    try:
+        bloq = Bloques.objects.get(id=codigo)
+        nombre = bloq.bloque
+        response = HttpResponse(content_type="image/jpeg")
+        img = Image.open('espolguide_app/img/'+nombre+'/'+nombre+'.JPG')
+        img.save(response, 'jpeg')
+        return response
+    except:
+        bloq = Bloques.objects.get(id=codigo)
+        nombre = bloq.bloque
+        response = HttpResponse(content_type="image/png")
+        img = Image.open('espolguide_app/img/'+"espol"+'/'+"espol"+'.png')
+        img.save(response, 'png')
+        return response
+    
