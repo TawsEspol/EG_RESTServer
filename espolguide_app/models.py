@@ -15,3 +15,12 @@ class Bloques(models.Model):
     # Returns the string representation of the model.
     def __str__(self):
         return self.nombre
+
+class Users(models.Model):
+    """docstring for Users"""
+    nombre = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=10)
+        
+     # Returns the string representation of the model.
+    def __str__(self):
+        return self.nombre
