@@ -12,7 +12,7 @@ __pycache__/*
 *.py[cod]
 *$py.class
 *.pyc
-espolguide_app/migrations/*
+espolguide_app/migrations/
 
 # C extensions
 *.so
@@ -121,4 +121,3 @@ static/
 
 #migrations
 espolguide_app/migrations/
-
