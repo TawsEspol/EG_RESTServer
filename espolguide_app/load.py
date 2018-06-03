@@ -1,27 +1,40 @@
 '''Script para cargar shapefiles en la base de datos se debe ejecutar en el shell de django'''
 import os
 from django.contrib.gis.utils import LayerMapping
-from .models import Bloques
+from .models import Buildings, Unities
 # Auto-generated `LayerMapping` dictionary for Bloques model
 BLOQUES_MAPPING = {
-    'codigo': 'CODIGO',
-    'nombre': 'NOMBRE',
-    'unidad': 'UNIDAD',
-    'bloque': 'BLOQUE',
-    'tipo': 'TIPO',
-    'descripcio': 'DESCRIPCIO',
-    'area_m2': 'AREA_M2',
+    'code_infra': 'code_infra',
+    'code_gtsi': 'code_gtsi',
+    'name': 'name',
+    'name_infra': 'name_infra',
+    'unity': 'unity',
+    'building_type': 'building_t',
+    'description': 'descriptio',
     'geom': 'MULTIPOLYGON',
 }
 BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           'data/Bloques', 'bloques-convertidos.shp'),)
+                                           'data/Bloques/prueba', 'datos-de-prueba.shp'),)
 
 
 def run(verbose=True):
     '''Funcion para cargar los shapefiles'''
     layer_map = LayerMapping(
-        Bloques, BLOQUES_SHP, BLOQUES_MAPPING,
-        transform=False, encoding='latin1',
+        Buildings, BLOQUES_SHP, BLOQUES_MAPPING,
+        transform=False, encoding='utf-8',
     )
     layer_map.save(strict=True, verbose=verbose)
+
+def load_unities():
+    file = open("unidades.txt","r")
+    for line in file:
+        data = line.strip().split("\t")
+        name = data[0]
+        unidad = Unities(name = name)
+        if len(data)==2:
+            description = data[1]
+            unidad.description = description
+        unidad.save()
+
+    file.close()
 
