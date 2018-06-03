@@ -12,7 +12,7 @@ __pycache__/*
 *.py[cod]
 *$py.class
 *.pyc
-espolguide_app/migrations/*
+espolguide_app/migrations/
 
 # C extensions
 *.so
@@ -98,6 +98,8 @@ celerybeat-schedule
 venv/
 ENV/
 my_venv/
+*/my_venv/*
+my_venv/*
 
 # Spyder project settings
 .spyderproject
@@ -112,6 +114,7 @@ my_venv/
 # mypy
 .mypy_cache/
 
+<<<<<<< 18f42b4011105c38765d1c61c734165c9ce02937
 #staticfiles
 staticfiles/
 */static
@@ -120,3 +123,7 @@ static/
 
 #migrations
 espolguide_app/migrations
+=======
+#migrations
+espolguide_app/migrations/*
+>>>>>>> [Sprint3]Bugs Tarea #105
