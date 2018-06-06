@@ -130,14 +130,14 @@ def show_photo(request, codigo):
         #bloq= Bloques.objects.get(id=codigo) 
         nombre = codigo
         response = HttpResponse(content_type="image/jpeg")
-        img = Image.open('espolguide_app/img/'+nombre+'/'+nombre+'.JPG')
+        img = Image.open('espolguide_app/static/img/'+nombre+'/'+nombre+'.JPG')
         img.save(response, 'jpeg')
         return response
     except Exception as e:
         # bloq= Bloques.objects.get(id=codigo) 
         nombre = codigo
         response = HttpResponse(content_type="image/png")
-        img = Image.open('espolguide_app/img/'+"espol"+'/'+"espol"+'.png')
+        img = Image.open('espolguide_app/static/img/'+"espol"+'/'+"espol"+'.png')
         img.save(response, 'png')
         return response
     
