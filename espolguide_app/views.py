@@ -5,8 +5,7 @@ import json
 from PIL import Image
 from django.http import HttpResponse
 from .models import Bloques
-
-# Create your views here.
+from django.templatetags.static import static
 
 
 # def transformar_coordenada(latitud, longitud):
@@ -127,17 +126,14 @@ def nombres_bloques(request):
 def show_photo(request, codigo):
     '''Funcion que genera la ruta para la imagen de los bloques '''
     try:
-        #bloq= Bloques.objects.get(id=codigo) 
+        block = Bloques.objects.get(codigo=codigo) 
         nombre = codigo
         response = HttpResponse(content_type="image/jpeg")
         img = Image.open('espolguide_app/static/img/'+nombre+'/'+nombre+'.JPG')
         img.save(response, 'jpeg')
         return response
     except Exception as e:
-        # bloq= Bloques.objects.get(id=codigo) 
-        nombre = codigo
-        response = HttpResponse(content_type="image/png")
-        img = Image.open('espolguide_app/static/img/'+"espol"+'/'+"espol"+'.png')
-        img.save(response, 'png')
-        return response
+        img = open('../staticfiles/img/espol/espol.png', 'rb').read()
+        return HttpResponse(img,content_type = 'image/png')
     
+
