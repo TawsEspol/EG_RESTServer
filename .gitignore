@@ -109,3 +109,4 @@ my_venv/
 staticfiles/
 */static
 espolguide_app/static
+static/
