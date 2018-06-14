@@ -107,7 +107,7 @@ def info_bloque(request, primary_key):
 
 
 def nombres_bloques(request):
-    '''Funcion que retorna los nombres oficiales y alternativos de los bloques '''
+    '''Returns the official and alternative names of a block '''
     feature_element = {}
     bloques = Bloques.objects.all()
     for bloque in bloques:
@@ -124,16 +124,13 @@ def nombres_bloques(request):
 
 
 def show_photo(request, codigo):
-    '''Funcion que genera la ruta para la imagen de los bloques '''
+    '''Return the photo of a block '''
     try:
         block = Bloques.objects.get(codigo=codigo) 
-        nombre = codigo
-        response = HttpResponse(content_type="image/jpeg")
-        img = Image.open('espolguide_app/static/img/'+nombre+'/'+nombre+'.JPG')
-        img.save(response, 'jpeg')
-        return response
-    except Exception as e:
-        img = open('../staticfiles/img/espol/espol.png', 'rb').read()
-        return HttpResponse(img,content_type = 'image/png')
-    
+        url = "www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        return redirect(url)
+    except Bloques.DoesNotExist:
+        block = None
+        url = "www.espol-guide.espol.edu.ec/static/img/espol.png"
+        return redirect(url)
 
