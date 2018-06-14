@@ -2,6 +2,7 @@
 *.tiff
 *.jpg
 *.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -110,3 +111,6 @@ staticfiles/
 */static
 espolguide_app/static
 static/
+
+#migrations
+espolguide_app/migrations
