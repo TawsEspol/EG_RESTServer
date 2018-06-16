@@ -5,9 +5,11 @@
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
+espolguide_app/__pycache__/*.pyc
 *.py[cod]
 *$py.class
-
+*.pyc
+espolguide_app/migrations/*
 # C extensions
 *.so
 

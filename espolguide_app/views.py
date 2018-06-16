@@ -3,9 +3,10 @@
 import json
 #from osgeo import osr
 from PIL import Image
-from django.http import HttpResponse
-from .models import Bloques
+from django.http import HttpResponse, HttpResponseRedirect 
+from .models import *
 from django.templatetags.static import static
+from django.shortcuts import redirect
 
 
 # def transformar_coordenada(latitud, longitud):
@@ -126,11 +127,11 @@ def nombres_bloques(request):
 def show_photo(request, codigo):
     '''Return the photo of a block '''
     try:
-        block = Bloques.objects.get(codigo=codigo) 
-        url = "www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
-        return redirect(url)
+        block = Bloques.objects.get(bloque=codigo) 
+        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        return HttpResponseRedirect(url)
+    
     except Bloques.DoesNotExist:
-        block = None
-        url = "www.espol-guide.espol.edu.ec/static/img/espol.png"
-        return redirect(url)
-
+        url = "http://www.espol-guide.espol.edu.ec/static/admin/img/icon-unknown.svg"
+        #return redirect(url,permanent = True)
+        return HttpResponseRedirect(url)
