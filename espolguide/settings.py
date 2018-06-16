@@ -25,7 +25,7 @@ read_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = '@7sa0i_o)_lq+7$6l93y9t9e=8*170(ay2r9ck#gq)%^m5k-5f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ["*"]

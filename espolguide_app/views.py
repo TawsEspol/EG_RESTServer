@@ -1,5 +1,5 @@
 #-*- encoding: latin1-*-
-'''Views, archivo para el backend del servidor'''
+"""Views, archivo para el backend del servidor"""
 import json
 #from osgeo import osr
 from PIL import Image
@@ -7,10 +7,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import *
 from django.templatetags.static import static
 from django.shortcuts import redirect
+from django.contrib.staticfiles import finders
 
 
 # def transformar_coordenada(latitud, longitud):
-#     '''Funcion para transformar el sistema de coordenadas'''
+#     """Funcion para transformar el sistema de coordenadas"""
 #     wgs84 = osr.SpatialReference()
 #     wgs84.ImportFromEPSG(4326)
 #     inp = osr.SpatialReference()
@@ -20,8 +21,8 @@ from django.shortcuts import redirect
 
 
 def obtener_bloques(request):
-    '''Funcion para poder obtener la informacion de los bloques incluido los shapefiles o
-    poligonos para ubicarlos en la app'''
+    """Funcion para poder obtener la informacion de los bloques incluido los shapefiles o
+    poligonos para ubicarlos en la app"""
     diccionario = {}
     lista = []
     bloques = Bloques.objects.all()
@@ -48,11 +49,11 @@ def obtener_bloques(request):
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
     return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"),
-                        content_type='application/json')
+                        content_type="application/json")
 
 
 def obtener_informacion_bloques(request):
-    '''Funcion para obtener solo informacion de cloques sin incluir shapefiles'''
+    """Funcion para obtener solo informacion de cloques sin incluir shapefiles"""
     diccionario = {}
     lista = []
     bloques = Bloques.objects.all()
@@ -69,11 +70,11 @@ def obtener_informacion_bloques(request):
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type="application/json")
 
 
 def info_bloque(request, primary_key):
-    '''Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
+    """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
     diccionario = {}
     lista = []
     bloque = Bloques.objects.get(pk=primary_key)
@@ -104,11 +105,11 @@ def info_bloque(request, primary_key):
     lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type="application/json")
 
 
 def nombres_bloques(request):
-    '''Returns the official and alternative names of a block '''
+    """Returns the official and alternative names of a block """
     feature_element = {}
     bloques = Bloques.objects.all()
     for bloque in bloques:
@@ -121,17 +122,21 @@ def nombres_bloques(request):
         diccionario["NombresAlternativos"] = lista
         diccionario["tipo"] = bloque.tipo
         feature_element["Bloque"+str(bloque.id)] = diccionario
-    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type='application/json')
+    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type="application/json")
 
 
 def show_photo(request, codigo):
-    '''Return the photo of a block '''
+    """Return the photo of a block """
     try:
-        block = Bloques.objects.get(bloque=codigo) 
-        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        block = Bloques.objects.get(bloque=codigo)
+        full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+        print(full_path)
+        if full_path == None :
+            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+        else:
+            url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
         return HttpResponseRedirect(url)
     
     except Bloques.DoesNotExist:
-        url = "http://www.espol-guide.espol.edu.ec/static/admin/img/icon-unknown.svg"
-        #return redirect(url,permanent = True)
+        url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
         return HttpResponseRedirect(url)
