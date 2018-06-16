@@ -3,9 +3,10 @@
 import json
 #from osgeo import osr
 from PIL import Image
-from django.http import HttpResponse
-from .models import Bloques
+from django.http import HttpResponse, HttpResponseRedirect 
+from .models import *
 from django.templatetags.static import static
+from django.shortcuts import redirect
 
 
 # def transformar_coordenada(latitud, longitud):
@@ -107,7 +108,7 @@ def info_bloque(request, primary_key):
 
 
 def nombres_bloques(request):
-    '''Funcion que retorna los nombres oficiales y alternativos de los bloques '''
+    '''Returns the official and alternative names of a block '''
     feature_element = {}
     bloques = Bloques.objects.all()
     for bloque in bloques:
@@ -124,16 +125,13 @@ def nombres_bloques(request):
 
 
 def show_photo(request, codigo):
-    '''Funcion que genera la ruta para la imagen de los bloques '''
+    '''Return the photo of a block '''
     try:
-        block = Bloques.objects.get(codigo=codigo) 
-        nombre = codigo
-        response = HttpResponse(content_type="image/jpeg")
-        img = Image.open('espolguide_app/static/img/'+nombre+'/'+nombre+'.JPG')
-        img.save(response, 'jpeg')
-        return response
-    except Exception as e:
-        img = open('../staticfiles/img/espol/espol.png', 'rb').read()
-        return HttpResponse(img,content_type = 'image/png')
+        block = Bloques.objects.get(bloque=codigo) 
+        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        return HttpResponseRedirect(url)
     
-
+    except Bloques.DoesNotExist:
+        url = "http://www.espol-guide.espol.edu.ec/static/admin/img/icon-unknown.svg"
+        #return redirect(url,permanent = True)
+        return HttpResponseRedirect(url)
