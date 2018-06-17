@@ -10,15 +10,6 @@ from django.shortcuts import redirect
 from django.contrib.staticfiles import finders
 
 
-# def transformar_coordenada(latitud, longitud):
-#     """Funcion para transformar el sistema de coordenadas"""
-#     wgs84 = osr.SpatialReference()
-#     wgs84.ImportFromEPSG(4326)
-#     inp = osr.SpatialReference()
-#     inp.ImportFromEPSG(32717)
-#     transformation = osr.CoordinateTransformation(inp, wgs84)
-#     return transformation.TransformPoint(latitud, longitud)
-
 
 def obtener_bloques(request):
     """Funcion para poder obtener la informacion de los bloques incluido los shapefiles o
