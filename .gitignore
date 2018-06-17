@@ -1,13 +1,17 @@
+static/
 *.tif
 *.tiff
 *.jpg
 *.png
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 espolguide_app/__pycache__/*
+espolguide_app/__pycache__/*.pyc
 *.py[cod]
 *$py.class
-
+*.pyc
+espolguide_app/migrations/*
 # C extensions
 *.so
 
@@ -106,3 +110,11 @@ my_venv/
 # mypy
 .mypy_cache/
 
+#staticfiles
+staticfiles/
+*/static
+espolguide_app/static
+static/
+
+#migrations
+espolguide_app/migrations
