@@ -5,6 +5,7 @@ static/
 *.png
 
 # Byte-compiled / optimized / DLL files
+espolguide_app/__pycache__/
 __pycache__/
 espolguide_app/__pycache__/*
 espolguide_app/__pycache__/*.pyc
@@ -114,16 +115,12 @@ my_venv/*
 # mypy
 .mypy_cache/
 
-<<<<<<< 18f42b4011105c38765d1c61c734165c9ce02937
 #staticfiles
-staticfiles/
 */static
 espolguide_app/static
 static/
 
-#migrations
-espolguide_app/migrations
-=======
+
 #migrations
 espolguide_app/migrations/*
->>>>>>> [Sprint3]Bugs Tarea #105
+espolguide_app/migrations/
