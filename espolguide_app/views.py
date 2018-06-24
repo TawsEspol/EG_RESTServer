@@ -3,11 +3,14 @@
 import json
 #from osgeo import osr
 from PIL import Image
+from rest_framework.authtoken.models import Token
+from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse
-from .models import Bloques
+from .models import Bloques, Users
+
 
 # Create your views here.
-
+#JWT_PAYLOAD_HANDLER = 'jwt_auth.utils.jwt_payload_handler'
 
 # def transformar_coordenada(latitud, longitud):
 #     '''Funcion para transformar el sistema de coordenadas'''
@@ -143,4 +146,26 @@ def show_photo(request, codigo):
         img = Image.open('espolguide_app/img/'+"espol"+'/'+"espol"+'.png')
         img.save(response, 'png')
         return response
+
+
+def token_user(request, name_user):
+    '''Funcion para generar toekn ara usaurios'''
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    # user = Users.objects.get(username=name_user)
+    user = Users.objects.get(username=name_user, password=name_user)
+    payload = jwt_payload_handler(user)
+    token = jwt_encode_handler(payload)
+    return HttpResponse(str(token))  # Response({'token':token}, status=200)
+    # return Token.objects.create(user=user)
+
+def add_user(request, datos):
+    try:
+        usuario = Users()
+        usuario.username = datos
+        usuario.password = datos
+        usuario.save()
+        return HttpResponse(str(True))
+    except:
+        return HttpResponse(str(False))
     

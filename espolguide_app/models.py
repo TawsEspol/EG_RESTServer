@@ -1,4 +1,8 @@
 from django.contrib.gis.db import models
+from django.conf import settings
+
+
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.user')
 
 class Bloques(models.Model):
     codigo = models.CharField(max_length=60)
@@ -18,9 +22,14 @@ class Bloques(models.Model):
 
 class Users(models.Model):
     """docstring for Users"""
-    nombre = models.CharField(max_length=100)
-    tipo = models.CharField(max_length=10)
+    REQUIRED_FIELDS = ('user',)
+    username = models.CharField(max_length=100, unique=True)
+    password = models.CharField(max_length=64, default=None)
+    USERNAME_FIELD = 'username'
+    is_anonymous = False
+    is_authenticated = False
+    #tender_authority = models.ForeignKey(settings.AUTH_USER_MODEL)
         
      # Returns the string representation of the model.
     def __str__(self):
-        return self.nombre
+        return self.username
