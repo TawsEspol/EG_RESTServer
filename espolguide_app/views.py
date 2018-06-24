@@ -1,30 +1,20 @@
 #-*- encoding: latin1-*-
-'''Views, archivo para el backend del servidor'''
+"""Views, archivo para el backend del servidor"""
 import json
-#from osgeo import osr
-from PIL import Image
 from rest_framework.authtoken.models import Token
 from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse
 from .models import Bloques, Users
+from django.http import HttpResponse, HttpResponseRedirect 
+from django.templatetags.static import static
+from django.shortcuts import redirect
+from django.contrib.staticfiles import finders
 
-
-# Create your views here.
-#JWT_PAYLOAD_HANDLER = 'jwt_auth.utils.jwt_payload_handler'
-
-# def transformar_coordenada(latitud, longitud):
-#     '''Funcion para transformar el sistema de coordenadas'''
-#     wgs84 = osr.SpatialReference()
-#     wgs84.ImportFromEPSG(4326)
-#     inp = osr.SpatialReference()
-#     inp.ImportFromEPSG(32717)
-#     transformation = osr.CoordinateTransformation(inp, wgs84)
-#     return transformation.TransformPoint(latitud, longitud)
 
 
 def obtener_bloques(request):
-    '''Funcion para poder obtener la informacion de los bloques incluido los shapefiles o
-    poligonos para ubicarlos en la app'''
+    """Funcion para poder obtener la informacion de los bloques incluido los shapefiles o
+    poligonos para ubicarlos en la app"""
     diccionario = {}
     lista = []
     bloques = Bloques.objects.all()
@@ -51,11 +41,11 @@ def obtener_bloques(request):
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
     return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"),
-                        content_type='application/json')
+                        content_type="application/json")
 
 
 def obtener_informacion_bloques(request):
-    '''Funcion para obtener solo informacion de cloques sin incluir shapefiles'''
+    """Funcion para obtener solo informacion de cloques sin incluir shapefiles"""
     diccionario = {}
     lista = []
     bloques = Bloques.objects.all()
@@ -73,11 +63,12 @@ def obtener_informacion_bloques(request):
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
     return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
-        , content_type='application/json')
+        , content_type="application/json")
+
 
 
 def info_bloque(request, primary_key):
-    '''Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo'''
+    """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
     diccionario = {}
     lista = []
     bloque = Bloques.objects.get(pk=primary_key)
@@ -109,11 +100,12 @@ def info_bloque(request, primary_key):
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
     return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
-        , content_type='application/json')
+        , content_type="application/json")
+
 
 
 def nombres_bloques(request):
-    '''Funcion que retorna los nombres oficiales y alternativos de los bloques '''
+    """Returns the official and alternative names of a block """
     feature_element = {}
     bloques = Bloques.objects.all()
     for bloque in bloques:
@@ -126,6 +118,7 @@ def nombres_bloques(request):
         diccionario["NombresAlternativos"] = lista
         diccionario["tipo"] = bloque.tipo
         feature_element["Bloque"+str(bloque.id)] = diccionario
+
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1")\
         , content_type='application/json')
 
@@ -149,15 +142,13 @@ def show_photo(request, codigo):
 
 
 def token_user(request, name_user):
-    '''Funcion para generar toekn ara usaurios'''
+    '''Funcion para generar token para usuarios'''
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-    # user = Users.objects.get(username=name_user)
     user = Users.objects.get(username=name_user, password=name_user)
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
-    return HttpResponse(str(token))  # Response({'token':token}, status=200)
-    # return Token.objects.create(user=user)
+    return HttpResponse(str(token))  
 
 def add_user(request, datos):
     try:
@@ -168,4 +159,18 @@ def add_user(request, datos):
         return HttpResponse(str(True))
     except:
         return HttpResponse(str(False))
-    
+
+
+def show_photo(request, codigo):
+    """Return the photo of a block """
+    block = Bloques.objects.filter(bloque=codigo)
+    if (len(block) == 0):
+    	url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+    	return HttpResponseRedirect(url)
+    full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+    if full_path == None :
+        url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+    else:
+        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+    return HttpResponseRedirect(url)
+
