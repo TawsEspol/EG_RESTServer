@@ -118,16 +118,16 @@ def nombres_bloques(request):
 
 def show_photo(request, codigo):
     """Return the photo of a block """
-    try:
-        block = Bloques.objects.get(bloque=codigo)
-        full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
-        print(full_path)
-        if full_path == None :
-            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-        else:
-            url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
-        return HttpResponseRedirect(url)
-    
-    except Bloques.DoesNotExist:
+    block = Bloques.objects.filter(bloque=codigo)
+    if (len(block) == 0):
+    	url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+    	return HttpResponseRedirect(url)
+    full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+    if full_path == None :
         url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-        return HttpResponseRedirect(url)
+    else:
+        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+    return HttpResponseRedirect(url)
+
+
+    
