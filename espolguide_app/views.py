@@ -130,4 +130,9 @@ def show_photo(request, codigo):
         return HttpResponseRedirect(url)
     except Bloques.DoesNotExist:
         url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-        return HttpResponseRedirect(url)
+    else:
+        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+    return HttpResponseRedirect(url)
+
+
+    
