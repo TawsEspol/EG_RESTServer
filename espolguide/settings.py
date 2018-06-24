@@ -26,7 +26,7 @@ read_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = ''
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = ["*"]
@@ -174,6 +174,6 @@ else:
 # Extra places for collectstatic to find static files.
 
 STATICFILES_DIRS = (
-    #'/home/belen/github/EG_RESTServer/espolguide_app/static/img',
-    '/home/manager/EG_RESTServer/espolguide_app/static/img',
+    '/home/belen/github/EG_RESTServer/espolguide_app/static/img',
+    #'/home/manager/EG_RESTServer/espolguide_app/static/img',
 )
