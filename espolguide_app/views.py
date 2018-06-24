@@ -1,10 +1,11 @@
 #-*- encoding: latin1-*-
 """Views, archivo para el backend del servidor"""
 import json
-#from osgeo import osr
-from PIL import Image
+from rest_framework.authtoken.models import Token
+from rest_framework_jwt.settings import api_settings
+from django.http import HttpResponse
+from .models import Bloques, Users
 from django.http import HttpResponse, HttpResponseRedirect 
-from .models import *
 from django.templatetags.static import static
 from django.shortcuts import redirect
 from django.contrib.staticfiles import finders
@@ -61,7 +62,9 @@ def obtener_informacion_bloques(request):
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type="application/json")
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
+        , content_type="application/json")
+
 
 
 def info_bloque(request, primary_key):
@@ -96,7 +99,9 @@ def info_bloque(request, primary_key):
     lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type="application/json")
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
+        , content_type="application/json")
+
 
 
 def nombres_bloques(request):
@@ -113,7 +118,47 @@ def nombres_bloques(request):
         diccionario["NombresAlternativos"] = lista
         diccionario["tipo"] = bloque.tipo
         feature_element["Bloque"+str(bloque.id)] = diccionario
-    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type="application/json")
+
+    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1")\
+        , content_type='application/json')
+
+
+def show_photo(request, codigo):
+    '''Funcion que genera la ruta para la imagen de los bloques '''
+    try:
+        bloq = Bloques.objects.get(id=codigo)
+        nombre = bloq.bloque
+        response = HttpResponse(content_type="image/jpeg")
+        img = Image.open('espolguide_app/img/'+nombre+'/'+nombre+'.JPG')
+        img.save(response, 'jpeg')
+        return response
+    except:
+        bloq = Bloques.objects.get(id=codigo)
+        nombre = bloq.bloque
+        response = HttpResponse(content_type="image/png")
+        img = Image.open('espolguide_app/img/'+"espol"+'/'+"espol"+'.png')
+        img.save(response, 'png')
+        return response
+
+
+def token_user(request, name_user):
+    '''Funcion para generar token para usuarios'''
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    user = Users.objects.get(username=name_user, password=name_user)
+    payload = jwt_payload_handler(user)
+    token = jwt_encode_handler(payload)
+    return HttpResponse(str(token))  
+
+def add_user(request, datos):
+    try:
+        usuario = Users()
+        usuario.username = datos
+        usuario.password = datos
+        usuario.save()
+        return HttpResponse(str(True))
+    except:
+        return HttpResponse(str(False))
 
 
 def show_photo(request, codigo):
@@ -129,5 +174,3 @@ def show_photo(request, codigo):
         url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
     return HttpResponseRedirect(url)
 
-
-    
