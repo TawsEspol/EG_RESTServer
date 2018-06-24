@@ -5,6 +5,7 @@ static/
 *.png
 
 # Byte-compiled / optimized / DLL files
+espolguide_app/__pycache__/
 __pycache__/
 espolguide_app/__pycache__/*
 espolguide_app/__pycache__/*.pyc
@@ -119,5 +120,7 @@ my_venv/*
 espolguide_app/static
 static/
 
+
 #migrations
+espolguide_app/migrations/*
 espolguide_app/migrations/
