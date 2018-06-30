@@ -8,14 +8,13 @@ BLOQUES_MAPPING = {
     'code_gtsi': 'code_gtsi',
     'name': 'name',
     'name_infra': 'name_infra',
-    'unity': 'unity',
     'building_type': 'building_t',
     'description': 'descriptio',
     'geom': 'MULTIPOLYGON',
 }
-BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                           'data/Bloques/prueba', 'datos-de-prueba.shp'),)
-
+#BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
+#                                           'data/Bloques/prueba', 'datos-de-prueba.shp'),)
+BLOQUES_SHP =  "/home/belen/Downloads/Shapes/data/Bloques/bloques-faltantes.shp"
 
 def run(verbose=True):
     '''Funcion para cargar los shapefiles'''
@@ -26,7 +25,7 @@ def run(verbose=True):
     layer_map.save(strict=True, verbose=verbose)
 
 def load_unities():
-    file = open("unidades.txt","r")
+    file = open("dumps/unidades.txt","r")
     for line in file:
         data = line.strip().split("\t")
         name = data[0]
