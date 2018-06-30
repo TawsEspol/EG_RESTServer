@@ -3,6 +3,7 @@
 import json
 from rest_framework.authtoken.models import Token
 from rest_framework_jwt.settings import api_settings
+from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
 from django.http import HttpResponse
 from .models import Bloques, Users
 from django.http import HttpResponse, HttpResponseRedirect 
@@ -67,40 +68,43 @@ def obtener_informacion_bloques(request):
 
 
 
-def info_bloque(request, primary_key):
+def info_bloque(request, primary_key, token):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-    diccionario = {}
-    lista = []
-    bloque = Bloques.objects.get(pk=primary_key)
-    feature_element = {}
-    feature_element["type"] = "Feature"
-    informacion = {"codigo": bloque.codigo,
-                   "nombre": bloque.nombre, "unidad": bloque.unidad}
-    informacion["bloque"] = bloque.bloque
-    informacion["tipo"] = bloque.tipo
-    informacion["descripcio"] = bloque.descripcio
-    feature_element["properties"] = informacion
-    geometry = {}
-    geometry["type"] = "Polygon"
-    coordenadas_externa = []
-    coordenadas_media = []
-    rango = len(bloque.geom[0][0])
-    for i in range(rango):
-        tupla = bloque.geom[0][0][i]
-        coordenadas = []
-        coordenadas.append(tupla[1])
-        coordenadas.append(tupla[0])
-        coordenadas_media.append(coordenadas)
-        break
-    # print("SE ACABO EL POLIGONO")
-    coordenadas_externa.append(coordenadas_media)
-    geometry["coordinates"] = coordenadas_externa
-    feature_element["geometry"] = geometry
-    lista.append(feature_element)
-    diccionario["features"] = lista
-    diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
-        , content_type="application/json")
+    usuario = Users.objects.filter(token = token)
+    if len(usuario) > 0:
+        diccionario = {}
+        lista = []
+        bloque = Bloques.objects.get(pk=primary_key)
+        feature_element = {}
+        feature_element["type"] = "Feature"
+        informacion = {"codigo": bloque.codigo,
+                       "nombre": bloque.nombre, "unidad": bloque.unidad}
+        informacion["bloque"] = bloque.bloque
+        informacion["tipo"] = bloque.tipo
+        informacion["descripcio"] = bloque.descripcio
+        feature_element["properties"] = informacion
+        geometry = {}
+        geometry["type"] = "Polygon"
+        coordenadas_externa = []
+        coordenadas_media = []
+        rango = len(bloque.geom[0][0])
+        for i in range(rango):
+            tupla = bloque.geom[0][0][i]
+            coordenadas = []
+            coordenadas.append(tupla[1])
+            coordenadas.append(tupla[0])
+            coordenadas_media.append(coordenadas)
+            break
+        # print("SE ACABO EL POLIGONO")
+        coordenadas_externa.append(coordenadas_media)
+        geometry["coordinates"] = coordenadas_externa
+        feature_element["geometry"] = geometry
+        lista.append(feature_element)
+        diccionario["features"] = lista
+        diccionario["type"] = "FeatureCollection"
+        return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1")\
+            , content_type="application/json")
+    return HttpResponse("Token Invalido")
 
 
 
@@ -123,22 +127,7 @@ def nombres_bloques(request):
         , content_type='application/json')
 
 
-def show_photo(request, codigo):
-    '''Funcion que genera la ruta para la imagen de los bloques '''
-    try:
-        bloq = Bloques.objects.get(id=codigo)
-        nombre = bloq.bloque
-        response = HttpResponse(content_type="image/jpeg")
-        img = Image.open('espolguide_app/img/'+nombre+'/'+nombre+'.JPG')
-        img.save(response, 'jpeg')
-        return response
-    except:
-        bloq = Bloques.objects.get(id=codigo)
-        nombre = bloq.bloque
-        response = HttpResponse(content_type="image/png")
-        img = Image.open('espolguide_app/img/'+"espol"+'/'+"espol"+'.png')
-        img.save(response, 'png')
-        return response
+
 
 
 def token_user(request, name_user):
@@ -148,29 +137,34 @@ def token_user(request, name_user):
     user = Users.objects.get(username=name_user, password=name_user)
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
+    user.token= str(token)
+    user.save()
     return HttpResponse(str(token))  
 
 def add_user(request, datos):
-    try:
-        usuario = Users()
-        usuario.username = datos
-        usuario.password = datos
-        usuario.save()
-        return HttpResponse(str(True))
-    except:
-        return HttpResponse(str(False))
+    #try:
+    usuario = Users()
+    usuario.username = datos
+    usuario.password = datos
+    usuario.token = "None"
+    usuario.save()
+    return HttpResponse(str(True))
+    #except:
+     #   return HttpResponse(str(False))
 
 
-def show_photo(request, codigo):
+def show_photo(request, codigo,  token):
     """Return the photo of a block """
-    block = Bloques.objects.filter(bloque=codigo)
-    if (len(block) == 0):
-    	url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-    	return HttpResponseRedirect(url)
-    full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
-    if full_path == None :
-        url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-    else:
-        url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
-    return HttpResponseRedirect(url)
-
+    usuario = Users.objects.filter(token = token)
+    if len(usuario) > 0:
+        block = Bloques.objects.filter(bloque=codigo)
+        if (len(block) == 0):
+        	url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+        	return HttpResponseRedirect(url)
+        full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+        if full_path == None :
+            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+        else:
+            url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        return HttpResponseRedirect(url)
+    return HttpResponse("Token Invalido")
