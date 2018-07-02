@@ -64,6 +64,7 @@ class Users(models.Model):
     REQUIRED_FIELDS = ('user',)
     username = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=64, default=None)
+    token = models.CharField(max_length=200, default=None)
     USERNAME_FIELD = 'username'
     is_anonymous = False
     is_authenticated = False
