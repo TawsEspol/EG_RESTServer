@@ -167,9 +167,9 @@ USE_TZ = True
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 if DEBUG:
-	STATIC_URL = '/static/'
+    STATIC_URL = '/static/'
 else:
-	STATIC_URL = 'www.espol-guide.espol.edu.ec/assets/'
+    STATIC_URL = 'www.espol-guide.espol.edu.ec/assets/'
 
 # Extra places for collectstatic to find static files.
 

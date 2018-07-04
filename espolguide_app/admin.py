@@ -1,5 +1,3 @@
-# -*- coding: latin1 -*-
-
 from django.contrib.gis import admin
 from .models import Bloques,Users, Buildings, Unities
 

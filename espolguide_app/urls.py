@@ -7,7 +7,7 @@ urlpatterns = [
     url(r'^obtenerBloques/', views.obtener_bloques),
     url(r'^obtenerInformacionBloques/', views.obtener_informacion_bloques),
     url(r'^infoBloque/(?P<primary_key>[\w|\W]+)/(?P<token>[\w|\W]+)$', views.info_bloque),
-    url(r'^nombresAlternativo/', views.nombres_bloques),
+    url(r'^nombresAlternativos/', views.nombres_bloques),
     url(r'^photoBlock/(?P<codigo>[\w|\W]*)/(?P<token>[\w|\W]+)$', views.show_photo),
     url(r'^apitokenauth/(?P<name_user>[\w|\W]+)$', views.token_user),
     url(r'^createUser/(?P<datos>[\w|\W]+)$', views.add_user),
