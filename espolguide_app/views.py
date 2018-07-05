@@ -2,12 +2,10 @@
 """Views, archivo para el backend del servidor"""
 import json
 #from osgeo import osr
-from PIL import Image
-from django.http import HttpResponse, HttpResponseRedirect 
-from .models import *
-from django.templatetags.static import static
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.staticfiles import finders
+from .models import Bloques
+
 
 
 
@@ -61,7 +59,8 @@ def obtener_informacion_bloques(request):
         lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type="application/json")
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"),\
+        content_type="application/json")
 
 
 def info_bloque(request, primary_key):
@@ -96,7 +95,8 @@ def info_bloque(request, primary_key):
     lista.append(feature_element)
     diccionario["features"] = lista
     diccionario["type"] = "FeatureCollection"
-    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"), content_type="application/json")
+    return HttpResponse(json.dumps(diccionario, ensure_ascii=False).encode("latin1"),\
+        content_type="application/json")
 
 
 def nombres_bloques(request):
@@ -113,7 +113,8 @@ def nombres_bloques(request):
         diccionario["NombresAlternativos"] = lista
         diccionario["tipo"] = bloque.tipo
         feature_element["Bloque"+str(bloque.id)] = diccionario
-    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), content_type="application/json")
+    return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("latin1"), \
+        content_type="application/json")
 
 
 def show_photo(request, codigo):
