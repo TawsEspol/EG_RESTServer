@@ -70,6 +70,7 @@ def obtener_informacion_bloques(request):
 
 def info_bloque(request, primary_key, token):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
+    """RETORNAR SOLO PRIMERA COORDENADA"""
     usuario = Users.objects.filter(token = token)
     a=1
     if len(usuario) > 0:
@@ -81,6 +82,7 @@ def info_bloque(request, primary_key, token):
         if (len(building) != 1 ):
             return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
             , content_type="application/json")
+        building = building[0]
         feature_element = {}
         feature_element["type"] = "Feature"
         information = {"codigo": building.code_infra,
@@ -114,7 +116,7 @@ def info_bloque(request, primary_key, token):
 
 
 
-def nombres_bloques(request):
+def alternative_names(request):
     """Returns the official and alternative names of a building """
     feature_element = {}
     buildings = Buildings.objects.all()
@@ -149,10 +151,10 @@ def token_user(request, name_user):
     user.save()
     return HttpResponse(str(token))  
 
-def add_user(request, datos):
+def add_user(request, data):
     usuario = Users()
-    usuario.username = datos
-    usuario.password = datos
+    usuario.username = data
+    usuario.password = data
     usuario.token = "None"
     usuario.save()
     return HttpResponse(str(True))
@@ -171,5 +173,6 @@ def show_photo(request, codigo,  token):
             url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
         else:
             url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+            #url = "192.168.0.7:8000/static/"+codigo+"/"+codigo+".JPG"
         return HttpResponseRedirect(url)
     return HttpResponse("Token Invalido")
