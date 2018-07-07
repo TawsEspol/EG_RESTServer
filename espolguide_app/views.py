@@ -119,7 +119,7 @@ def nombres_bloques(request):
 
 def show_photo(request, codigo):
     """Return the photo of a block """
-    building = Buildings.objects.filter(code_infra=codigo)
+    building = Bloques.objects.filter(codigo=codigo)
     if (len(building) != 1):
         url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
         return HttpResponseRedirect(url)
