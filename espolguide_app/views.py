@@ -1,15 +1,10 @@
 #-*- encoding: latin1-*-
 """Views, archivo para el backend del servidor"""
 import json
-from rest_framework.authtoken.models import Token
 from rest_framework_jwt.settings import api_settings
-from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
-from django.http import HttpResponse
-from .models import Buildings, Users
-from django.http import HttpResponse, HttpResponseRedirect 
-from django.templatetags.static import static
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.staticfiles import finders
+from .models import Buildings, Users, Favorites
 
 
 
@@ -22,7 +17,7 @@ def obtener_bloques(request):
     for building in buildings:
         feature_element = {}
         feature_element["type"] = "Feature"
-        feature_element["identificador"] = "Bloque"+str(building.id) #Cómo almacenan y usan estos ids
+        feature_element["identificador"] = "Bloque"+str(building.id)
         geometry = {}
         geometry["type"] = "Polygon"
         external_coords = []
@@ -56,7 +51,7 @@ def obtener_informacion_bloques(request):
         feature_element["identificador"] = "Bloque"+str(building.id)
         information = {"codigo": building.code_infra,
                        "nombre": building.name, "unidad": building.unity}
-        information["bloque"] = building.code_infra #CUÁL ES LA DIFERENCIA ENTRE LAS CLAVES bloque y código
+        information["bloque"] = building.code_infra
         information["tipo"] = building.building_type
         information["descripcio"] = building.description
         feature_element["properties"] = information
@@ -67,25 +62,23 @@ def obtener_informacion_bloques(request):
         , content_type="application/json")
 
 
-
 def info_bloque(request, primary_key, token):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-    usuario = Users.objects.filter(token = token)
-    a=1
+    usuario = Users.objects.filter(token=token)
     if len(usuario) > 0:
         dictionary = {}
         info_list = []
         building = Buildings.objects.filter(pk=primary_key)
         #If there are no buildings or more than one with that pk
         #Return empty dictionary
-        if (len(building) != 1 ):
+        if len(building) != 1:
             return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
             , content_type="application/json")
         feature_element = {}
         feature_element["type"] = "Feature"
         information = {"codigo": building.code_infra,
                        "nombre": building.name, "unidad": building.unity}
-        information["bloque"] = building.code_infra  #CUÁL ES LA DIFERENCIA ENTRE LAS CLAVES bloque y código
+        information["bloque"] = building.code_infra
         information["tipo"] = building.building_type
         information["descripcio"] = building.description
         feature_element["properties"] = information
@@ -145,31 +138,65 @@ def token_user(request, name_user):
     user = Users.objects.get(username=name_user, password=name_user)
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
-    user.token= str(token)
+    user.token = str(token)
     user.save()
-    return HttpResponse(str(token))  
+    return HttpResponse(str(token))
 
 def add_user(request, datos):
+    """Service for create user for create tokens"""
     usuario = Users()
     usuario.username = datos
     usuario.password = datos
     usuario.token = "None"
     usuario.save()
     return HttpResponse(str(True))
-    
 
-def show_photo(request, codigo,  token):
+def get_token(request, name_user):
+    """Service for get token"""
+    user = Users.objects.filter(username=name_user)
+    if len(user) > 0:
+        return HttpResponse(user.token)
+    return HttpResponse("User Invalido")
+
+
+def show_photo(request, codigo, token):
     """Return the photo of a block """
-    usuario = Users.objects.filter(token = token)
+    usuario = Users.objects.filter(token=token)
     if len(usuario) > 0:
         building = Buildings.objects.filter(code_infra=codigo)
-        if (len(building) != 1):
+        if len(building) != 1:
             url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
             return HttpResponseRedirect(url)
         full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
-        if full_path == None :
+        if full_path == None:
             url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
         else:
             url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
         return HttpResponseRedirect(url)
     return HttpResponse("Token Invalido")
+
+def add_favorite(request):
+    if request.method == 'POST':
+        token = request.META["access_token"]
+        user = Users.objects.filter(token=token)
+        code = request["data"]["code_gtsi"]
+        if len(user) > 0:
+            building = Buildings.objects.filter(code_gtsi=code)
+            favorites = Favorites()
+            favorites.id_buildings = building.id
+            favorites.id_users = user.id
+            favorites.save()
+
+def get_favorites()
+if request.method == 'POST':
+        token = request.META["access_token"]
+        user = Users.objects.filter(token=token)
+        code_pois_favorites = []
+        if len(user) > 0:
+            favorites = Favorites.objects.filter(id_users=user.id)
+            for fav in favorites:
+                building = Buildings.objects.filter(id=fav.id_buildings)
+                code_pois_favorites.append(building.code_gtsi)
+        feature = {"codes_gtsi": code_pois_favorites}
+        return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')                

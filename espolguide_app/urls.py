@@ -11,4 +11,6 @@ urlpatterns = [
     url(r'^photoBlock/(?P<codigo>[\w|\W]*)/(?P<token>[\w|\W]+)$', views.show_photo),
     url(r'^apitokenauth/(?P<name_user>[\w|\W]+)$', views.token_user),
     url(r'^createUser/(?P<datos>[\w|\W]+)$', views.add_user),
+    url(r'^getToken/(?P<name_user>[\w|\W]+)$', views.get_token),
+    url(r'^addFavorite/', views.add_favorite),
 ]
