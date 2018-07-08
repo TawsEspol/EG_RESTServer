@@ -147,8 +147,13 @@ def add_user(request, datos):
     usuario = Users()
     usuario.username = datos
     usuario.password = datos
-    usuario.token = "None"
     usuario.save()
+    jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+    jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+    user = Users.objects.get(username=name_user, password=name_user)
+    payload = jwt_payload_handler(user)
+    token = jwt_encode_handler(payload)
+    user.token = str(token)
     return HttpResponse(str(True))
 
 def get_token(request, name_user):
@@ -176,6 +181,7 @@ def show_photo(request, codigo, token):
     return HttpResponse("Token Invalido")
 
 def add_favorite(request):
+    """Service for add favorite POIs for a user"""
     if request.method == 'POST':
         token = request.META["access_token"]
         user = Users.objects.filter(token=token)
@@ -187,7 +193,8 @@ def add_favorite(request):
             favorites.id_users = user.id
             favorites.save()
 
-def get_favorites()
+def get_favorites(request)
+"""Service for get favorites POIs for a user"""
 if request.method == 'POST':
         token = request.META["access_token"]
         user = Users.objects.filter(token=token)
