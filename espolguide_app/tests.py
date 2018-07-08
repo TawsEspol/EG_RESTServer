@@ -29,14 +29,8 @@ class CasoTest(TestCase):
         request = self.factory.get('/obtainBuildingsInfo/BLOQUE 15A/'+token)
         self.assertEqual(response.status_code, 200)
 
-    def add_user_test(self):
-        # Create an instance of a GET request.
-        request = self.factory.get('/photoBlock/16-C')
-
-        # Recall that middleware are not supported. You can simulate a
-        # logged-in user by setting request.user manually.
-        request.user = self.user
-
-        # Test my_view() as if it were deployed at /customer/details
-        response = show_photo(request)
+    def get_building_centroid(self):
+        request = self.factory.get('/coordinates/BLOQUE 15A/')
         self.assertEqual(response.status_code, 200)
+
+    
