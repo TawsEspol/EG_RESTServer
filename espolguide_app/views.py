@@ -10,11 +10,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.templatetags.static import static
 from django.shortcuts import redirect
 from django.contrib.staticfiles import finders
-from shapely.geometry import Polygon
 
 
 
-
+def get_centroid(vertexes):
+     _x_list = [vertex [0] for vertex in vertexes]
+     _y_list = [vertex [1] for vertex in vertexes]
+     _len = len(vertexes)
+     _x = sum(_x_list) / _len
+     _y = sum(_y_list) / _len
+     return(_x, _y)
 
 def obtain_buildings(request):
     """Funcion para poder obtener la information de los Buildings incluido los shapefiles o
@@ -167,7 +172,7 @@ def show_photo(request, codigo,  token):
     """Return the photo of a block """
     usuario = Users.objects.filter(token = token)
     if len(usuario) > 0:
-        building = Buildings.objects.filter(code_infra=codigo)
+        building = Buildings.objects.filter(code_gtsi=codigo)
         if (len(building) != 1):
             url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
             return HttpResponseRedirect(url)
@@ -178,28 +183,27 @@ def show_photo(request, codigo,  token):
             url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
         return HttpResponseRedirect(url)
     return HttpResponse("Token Invalido")
+    
 
-def get_building_centroid(request, code_gtsi, token):
-    usuario = Users.objects.filter(token = token)
-    if len(usuario) > 0:
-        dictionary = {}
-        building = Buildings.objects.filter(code_gtsi=code_gtsi)
-        #If there are no buildings or more than one with that code
-        #Return empty dictionary
-        if (len(building) != 1 ):
-            return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-            , content_type="application/json")
-        building = building[0]
-        points = []
-        geom_long = len(building.geom[0][0])
-        for i in range(geom_long):
-            coords_tuple = building.geom[0][0][i]
-            coordinates = (coords_tuple[1], coords_tuple[0])
-            points.append(coordinates)
-        polygon = Polygon(points)
-        centroid = polygon.representative_point().coords
-        dictionary["lat"] = centroid[0][0]
-        dictionary["long"] = centroid[0][1]
+def get_building_centroid(request, code_gtsi):
+    dictionary = {}
+    building = Buildings.objects.filter(code_gtsi=code_gtsi)
+    #If there are no buildings or more than one with that code
+    #Return empty dictionary
+    if (len(building) != 1 ):
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-            , content_type="application/json")
-    return HttpResponse("Token Invalido")
+        , content_type="application/json")
+    building = building[0]
+    points = []
+    geom_long = len(building.geom[0][0])
+    for i in range(geom_long):
+        coords_tuple = building.geom[0][0][i]
+        coordinates = (coords_tuple[1], coords_tuple[0])
+        points.append(coordinates)
+    centroid = get_centroid(points)
+    
+    dictionary["lat"] = centroid[0]
+    dictionary["long"] = centroid[1]
+    return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+        , content_type="application/json")
+

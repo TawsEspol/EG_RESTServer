@@ -11,5 +11,5 @@ urlpatterns = [
     url(r'^photoBlock/(?P<codigo>[\w|\W]*)/(?P<token>[\w|\W]+)$', views.show_photo),
     url(r'^apitokenauth/(?P<name_user>[\w|\W]+)$', views.token_user),
     url(r'^createUser/(?P<data>[\w|\W]+)$', views.add_user),
-    url(r'^buildingCentroid/(?P<code_gtsi>[\w|\W]+)/(?P<token>[\w|\W]+)$', views.get_building_centroid),
+    url(r'^coordinates/(?P<code_gtsi>[\w |\W ]+)/$', views.get_building_centroid),
 ]
