@@ -155,11 +155,14 @@ def token_user(request, name_user):
     user.save()
     return HttpResponse(str(token))
 
-def add_user(request, datos):
+def login(request):
     """Service for create user for create tokens"""
+    usuario = Users.objects.filter(username=request["data"]["username"])
+    if len(usuario) > 0:
+        return HttpResponse(str(usuario.token))
     usuario = Users()
-    usuario.username = datos
-    usuario.password = datos
+    usuario.username = request["data"]["username"]
+    usuario.password = request["data"]["username"]
     usuario.save()
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
@@ -167,14 +170,9 @@ def add_user(request, datos):
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
     user.token = str(token)
-    return HttpResponse(str(True))
+    return HttpResponse(str(token))
 
-def get_token(request, name_user):
-    """Service for get token"""
-    user = Users.objects.filter(username=name_user)
-    if len(user) > 0:
-        return HttpResponse(user.token)
-    return HttpResponse("User Invalido")
+
 
 
 def show_photo(request, codigo, token):
