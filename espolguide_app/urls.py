@@ -4,13 +4,15 @@ from rest_framework_jwt.views import obtain_jwt_token
 from . import views
 APP_NAME = 'espolguide_app'
 urlpatterns = [
-    url(r'^obtenerBloques/', views.obtener_bloques),
-    url(r'^obtenerInformacionBloques/', views.obtener_informacion_bloques),
-    url(r'^infoBloque/(?P<primary_key>[\w|\W]+)/(?P<token>[\w|\W]+)$', views.info_bloque),
-    url(r'^nombresAlternativos/', views.nombres_bloques),
+    url(r'^obtainBuildings/', views.obtain_buildings),
+    url(r'^obtainBuildingsInfo/', views.obtain_buildings_info),
+    url(r'^buildingInfo/(?P<code_gtsi>[\w|\W]+)/(?P<token>[\w|\W]+)$', views.building_info),
+    url(r'^alternativeNames/', views.alternative_names),
     url(r'^photoBlock/(?P<codigo>[\w|\W]*)/(?P<token>[\w|\W]+)$', views.show_photo),
     url(r'^apitokenauth/(?P<name_user>[\w|\W]+)$', views.token_user),
     url(r'^createUser/(?P<datos>[\w|\W]+)$', views.add_user),
     url(r'^getToken/(?P<name_user>[\w|\W]+)$', views.get_token),
     url(r'^addFavorite/', views.add_favorite),
+    url(r'^createUser/(?P<data>[\w|\W]+)$', views.add_user),
+    url(r'^coordinates/(?P<code_gtsi>[\w |\W ]+)/$', views.get_building_centroid),
 ]

@@ -8,14 +8,15 @@ BLOQUES_MAPPING = {
     'code_gtsi': 'code_gtsi',
     'name': 'name',
     'name_infra': 'name_infra',
+    'unity_name' : 'unity',
     'building_type': 'building_t',
     'description': 'descriptio',
     'geom': 'MULTIPOLYGON',
 }
 #BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
 #                                           'data/Bloques/prueba', 'datos-de-prueba.shp'),)
-BLOQUES_SHP =  "/home/belen/Downloads/Shapes/data/Bloques/bloques-faltantes.shp"
 
+BLOQUES_SHP = "/home/belen/Downloads/Shapes/data/Bloques/con_geometria/bloques-unificados-con-geometria.shp"
 def run(verbose=True):
     '''Funcion para cargar los shapefiles'''
     layer_map = LayerMapping(

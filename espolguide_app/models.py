@@ -24,6 +24,7 @@ class Unities(models.Model):
 
 
 class Buildings(models.Model):
+
     """Model for a building in a campus. A building has salons like offices,
      clasrooms and laboratories"""
     code_infra = models.CharField(max_length=60)
@@ -32,13 +33,15 @@ class Buildings(models.Model):
     name_infra = models.CharField(max_length=80)
     building_type = models.CharField(max_length=60)
     description = models.CharField(max_length=150, null=True, blank=True)
-    unity = models.ForeignKey(Unities, to_field="name", on_delete=models.CASCADE, null=True)
+    #unity = models.ForeignKey(Unities, to_field = "name", on_delete = models.CASCADE, null = True)
+    unity_name = models.CharField(max_length=80, null=True)
     geom = models.MultiPolygonField(srid=4326)
     objects = models.Manager()
 
+
 class Salons(models.Model):
-    """Model for a salon inside a building. A salon can be a classroom, laboratory, dining room;
-     any room inside a building"""
+    """Model for a salon inside a building. A salon can be a classroom, laboratory,
+     dining room; any room inside a building"""
     name = models.CharField(max_length=80)
     building = models.ForeignKey(Buildings, on_delete=models.CASCADE)
     salon_type = models.CharField(max_length=60)
@@ -48,7 +51,7 @@ class Salons(models.Model):
 
 
 class Bloques(models.Model):
-    """A block is formed by various buildings, and various blocks can 
+    """A block is formed by various buildings, and various blocks can
     make up a unity like a faculty"""
     codigo = models.CharField(max_length=60)
     nombre = models.CharField(max_length=80)
@@ -74,7 +77,7 @@ class Users(models.Model):
     USERNAME_FIELD = 'username'
     is_anonymous = False
     is_authenticated = False
-    
+
     # Returns the string representation of the model.
     def __str__(self):
         return self.username

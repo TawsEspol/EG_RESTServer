@@ -8,7 +8,15 @@ from .models import Buildings, Users, Favorites
 
 
 
-def obtener_bloques(request):
+def get_centroid(vertexes):
+     _x_list = [vertex [0] for vertex in vertexes]
+     _y_list = [vertex [1] for vertex in vertexes]
+     _len = len(vertexes)
+     _x = sum(_x_list) / _len
+     _y = sum(_y_list) / _len
+     return(_x, _y)
+
+def obtain_buildings(request):
     """Funcion para poder obtener la information de los Buildings incluido los shapefiles o
     poligonos para ubicarlos en la app"""
     dictionary = {}
@@ -40,7 +48,7 @@ def obtener_bloques(request):
                         content_type="application/json")
 
 
-def obtener_informacion_bloques(request):
+def obtain_buildings_info(request):
     """Funcion para obtener solo information de cloques sin incluir shapefiles"""
     dictionary = {}
     info_list = []
@@ -62,18 +70,22 @@ def obtener_informacion_bloques(request):
         , content_type="application/json")
 
 
-def info_bloque(request, primary_key, token):
+
+
+def building_info(request, code_gtsi, token):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-    usuario = Users.objects.filter(token=token)
+    """RETORNAR SOLO PRIMERA COORDENADA"""
+    usuario = Users.objects.filter(token = token)
     if len(usuario) > 0:
         dictionary = {}
         info_list = []
-        building = Buildings.objects.filter(pk=primary_key)
+        building = Buildings.objects.filter(code_gtsi=code_gtsi)
         #If there are no buildings or more than one with that pk
         #Return empty dictionary
         if len(building) != 1:
             return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
             , content_type="application/json")
+        building = building[0]
         feature_element = {}
         feature_element["type"] = "Feature"
         information = {"codigo": building.code_infra,
@@ -107,26 +119,27 @@ def info_bloque(request, primary_key, token):
 
 
 
-def nombres_bloques(request):
+def alternative_names(request):
     """Returns the official and alternative names of a building """
     feature_element = {}
     buildings = Buildings.objects.all()
+    count = 1
     for building in buildings:
         dictionary = {}
         dictionary["NombreOficial"] = building.name
         info_list = []
-        if building.name != "":
-            code_infra = building.code_infra
-            if code_infra != "":
-                info_list.append("Bloque "+building.code_infra)
-            code_gtsi = building.code_gtsi
-            if code_gtsi != "":
-                info_list.append(building.code_gtsi)
-        info_list.append(building.description)
+        code_infra = building.code_infra
+        if (code_infra is not None and code_infra != ""):
+            info_list.append("Bloque "+building.code_infra)
+        code_gtsi = building.code_gtsi
+        if (code_gtsi is not None and code_gtsi != "" ):
+            info_list.append(building.code_gtsi)
+        dictionary["descripcio"] = building.description
         dictionary["NombresAlternativos"] = info_list
         dictionary["tipo"] = building.building_type
-        feature_element["Bloque"+str(building.id)] = dictionary
-
+        #feature_element["Bloque"+str(building.id)] = dictionary
+        feature_element[count] = dictionary
+        count+=1
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
@@ -207,3 +220,26 @@ if request.method == 'POST':
         feature = {"codes_gtsi": code_pois_favorites}
         return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')                
+    
+
+def get_building_centroid(request, code_gtsi):
+    dictionary = {}
+    building = Buildings.objects.filter(code_gtsi=code_gtsi)
+    #If there are no buildings or more than one with that code
+    #Return empty dictionary
+    if (len(building) != 1 ):
+        return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+        , content_type="application/json")
+    building = building[0]
+    points = []
+    geom_long = len(building.geom[0][0])
+    for i in range(geom_long):
+        coords_tuple = building.geom[0][0][i]
+        coordinates = (coords_tuple[1], coords_tuple[0])
+        points.append(coordinates)
+    centroid = get_centroid(points)
+    
+    dictionary["lat"] = centroid[0]
+    dictionary["long"] = centroid[1]
+    return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+        , content_type="application/json")
