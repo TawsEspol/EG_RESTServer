@@ -4,17 +4,19 @@ import json
 from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.staticfiles import finders
+from django.views.decorators.csrf import csrf_exempt
 from .models import Buildings, Users, Favorites
 
 
 
 def get_centroid(vertexes):
-     _x_list = [vertex [0] for vertex in vertexes]
-     _y_list = [vertex [1] for vertex in vertexes]
-     _len = len(vertexes)
-     _x = sum(_x_list) / _len
-     _y = sum(_y_list) / _len
-     return(_x, _y)
+    """Function for get centroid for shapes"""
+    _x_list = [vertex[0] for vertex in vertexes]
+    _y_list = [vertex[1] for vertex in vertexes]
+    _len = len(vertexes)
+    _x = sum(_x_list) / _len
+    _y = sum(_y_list) / _len
+    return(_x, _y)
 
 def obtain_buildings(request):
     """Funcion para poder obtener la information de los Buildings incluido los shapefiles o
@@ -74,8 +76,7 @@ def obtain_buildings_info(request):
 
 def building_info(request, code_gtsi, token):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-    """RETORNAR SOLO PRIMERA COORDENADA"""
-    usuario = Users.objects.filter(token = token)
+    usuario = Users.objects.filter(token=token)
     if len(usuario) > 0:
         dictionary = {}
         info_list = []
@@ -132,14 +133,14 @@ def alternative_names(request):
         if (code_infra is not None and code_infra != ""):
             info_list.append("Bloque "+building.code_infra)
         code_gtsi = building.code_gtsi
-        if (code_gtsi is not None and code_gtsi != "" ):
+        if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(building.code_gtsi)
         dictionary["descripcio"] = building.description
         dictionary["NombresAlternativos"] = info_list
         dictionary["tipo"] = building.building_type
         #feature_element["Bloque"+str(building.id)] = dictionary
         feature_element[count] = dictionary
-        count+=1
+        count += 1
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
@@ -155,22 +156,33 @@ def token_user(request, name_user):
     user.save()
     return HttpResponse(str(token))
 
+@csrf_exempt
 def login(request):
     """Service for create user for create tokens"""
-    usuario = Users.objects.filter(username=request["data"]["username"])
+    print("body:  ", json.loads(str(request.body)[2:-1]))
+    datos = json.loads(str(request.body)[2:-1])
+    print(datos)
+    #print("body:  ",request.headers)
+    usuario = Users.objects.filter(username=datos.get("data").get("username"))
     if len(usuario) > 0:
-        return HttpResponse(str(usuario.token))
+        return HttpResponse(str(usuario[0].token))
     usuario = Users()
-    usuario.username = request["data"]["username"]
-    usuario.password = request["data"]["username"]
+    usuario.username = datos.get("data").get("username")
+    usuario.password = datos.get("data").get("username")
+    usuario.token = "None"
     usuario.save()
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
-    user = Users.objects.get(username=name_user, password=name_user)
+    user = Users.objects.get(username=datos.get("data").get("username"),\
+     password=datos.get("data").get("username"))
     payload = jwt_payload_handler(user)
     token = jwt_encode_handler(payload)
     user.token = str(token)
-    return HttpResponse(str(token))
+    user.save()
+    print(user.token)
+    return HttpResponse(json.dumps({"access-token": user.token},\
+     ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')
 
 
 
@@ -194,7 +206,7 @@ def show_photo(request, codigo, token):
 def add_favorite(request):
     """Service for add favorite POIs for a user"""
     if request.method == 'POST':
-        token = request.META["access_token"]
+        token = request.META["access-token"]
         user = Users.objects.filter(token=token)
         code = request["data"]["code_gtsi"]
         if len(user) > 0:
@@ -204,10 +216,10 @@ def add_favorite(request):
             favorites.id_users = user.id
             favorites.save()
 
-def get_favorites(request)
-"""Service for get favorites POIs for a user"""
-if request.method == 'POST':
-        token = request.META["access_token"]
+def get_favorites(request):
+    """Service for get favorites POIs for a user"""
+    if request.method == 'POST':
+        token = request.META["access-token"]
         user = Users.objects.filter(token=token)
         code_pois_favorites = []
         if len(user) > 0:
@@ -217,15 +229,18 @@ if request.method == 'POST':
                 code_pois_favorites.append(building.code_gtsi)
         feature = {"codes_gtsi": code_pois_favorites}
         return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')                
-    
+        , content_type='application/json')
+    return HttpResponse(json.dumps({}, ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')
+
 
 def get_building_centroid(request, code_gtsi):
+    """Return centroid for buoldings"""
     dictionary = {}
     building = Buildings.objects.filter(code_gtsi=code_gtsi)
     #If there are no buildings or more than one with that code
     #Return empty dictionary
-    if (len(building) != 1 ):
+    if len(building) != 1:
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
         , content_type="application/json")
     building = building[0]
@@ -236,7 +251,7 @@ def get_building_centroid(request, code_gtsi):
         coordinates = (coords_tuple[1], coords_tuple[0])
         points.append(coordinates)
     centroid = get_centroid(points)
-    
+
     dictionary["lat"] = centroid[0]
     dictionary["long"] = centroid[1]
     return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\

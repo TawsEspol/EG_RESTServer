@@ -11,6 +11,7 @@ class Unities(models.Model):
      libraries, management units and academic clubs"""
     name = models.CharField(max_length=150, unique=True)
     description = models.CharField(max_length=250, null=True, blank=True)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -45,6 +46,7 @@ class Salons(models.Model):
     name = models.CharField(max_length=80)
     building = models.ForeignKey(Buildings, on_delete=models.CASCADE)
     salon_type = models.CharField(max_length=60)
+    objects = models.Manager()
 
     def __str__(self):
         return self.name
@@ -77,6 +79,7 @@ class Users(models.Model):
     USERNAME_FIELD = 'username'
     is_anonymous = False
     is_authenticated = False
+    objects = models.Manager()
 
     # Returns the string representation of the model.
     def __str__(self):
@@ -87,3 +90,4 @@ class Favorites(models.Model):
     id_buildings = models.ForeignKey(Buildings, on_delete=models.CASCADE)
     id_users = models.ForeignKey(Users, on_delete=models.CASCADE)
     time_of_create = models.DateField(auto_now_add=True)
+    objects = models.Manager()
