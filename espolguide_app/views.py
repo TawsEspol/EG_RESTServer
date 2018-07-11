@@ -159,13 +159,20 @@ def token_user(request, name_user):
 @csrf_exempt
 def login(request):
     """Service for create user for create tokens"""
-    print("body:  ", json.loads(str(request.body)[2:-1]))
+    #print("fhdfhfghf")
+    #print("body:  ", json.loads(str(request.body)[2:-1]))
     datos = json.loads(str(request.body)[2:-1])
-    print(datos)
+    #print("entrooo")
     #print("body:  ",request.headers)
     usuario = Users.objects.filter(username=datos.get("data").get("username"))
     if len(usuario) > 0:
-        return HttpResponse(str(usuario[0].token))
+        print(usuario[0])
+        user = Users.objects.get(username=datos.get("data").get("username"),\
+         password=datos.get("data").get("username"))
+        datos_retornar = {"access-token": user.token}
+        print("registardo: ", datos_retornar)
+        return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')
     usuario = Users()
     usuario.username = datos.get("data").get("username")
     usuario.password = datos.get("data").get("username")
@@ -179,9 +186,9 @@ def login(request):
     token = jwt_encode_handler(payload)
     user.token = str(token)
     user.save()
-    print(user.token)
-    return HttpResponse(json.dumps({"access-token": user.token},\
-     ensure_ascii=False).encode("utf-8")\
+    datos_retornar = {"access-token": user.token}
+    print("retorno: ", datos_retornar)
+    return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
 
