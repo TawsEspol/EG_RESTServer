@@ -204,9 +204,9 @@ def add_favorite(request):
             favorites.id_users = user.id
             favorites.save()
 
-def get_favorites(request)
-"""Service for get favorites POIs for a user"""
-if request.method == 'POST':
+def get_favorites(request):
+    """Service for get favorites POIs for a user"""
+    if request.method == 'POST':
         token = request.META["access_token"]
         user = Users.objects.filter(token=token)
         code_pois_favorites = []
