@@ -1,5 +1,5 @@
 """Here models"""
-
+import datetime
 from django.contrib.gis.db import models
 from django.conf import settings
 
@@ -89,5 +89,5 @@ class Favorites(models.Model):
     """Model for save favorites POIs"""
     id_buildings = models.ForeignKey(Buildings, on_delete=models.CASCADE)
     id_users = models.ForeignKey(Users, on_delete=models.CASCADE)
-    time_of_create = models.DateField(auto_now_add=True)
+    time_of_create = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()

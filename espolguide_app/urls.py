@@ -11,6 +11,6 @@ urlpatterns = [
     url(r'^photoBlock/(?P<codigo>[\w|\W]*)/(?P<token>[\w|\W]+)$', views.show_photo),
     url(r'^apitokenauth/(?P<name_user>[\w|\W]+)$', views.token_user),
     url(r'^login/', views.login),
-    url(r'^addFavorite/', views.add_favorite),
+    url(r'^favorites/', views.favorites),
     url(r'^coordinates/(?P<code_gtsi>[\w |\W ]+)/$', views.get_building_centroid),
 ]
