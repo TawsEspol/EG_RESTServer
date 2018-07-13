@@ -127,7 +127,7 @@ def alternative_names(request):
     count = 1
     for building in buildings:
         dictionary = {}
-        dictionary["NombreOficial"] = building.name
+        dictionary["name"] = building.name
         info_list = []
         code_infra = building.code_infra
         if (code_infra is not None and code_infra != ""):
@@ -135,9 +135,9 @@ def alternative_names(request):
         code_gtsi = building.code_gtsi
         if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(building.code_gtsi)
-        dictionary["descripcio"] = building.description
-        dictionary["NombresAlternativos"] = info_list
-        dictionary["tipo"] = building.building_type
+        dictionary["code_gtsi"] = code_gtsi
+        dictionary["alternative_names"] = info_list
+        dictionary["type"] = building.building_type
         #feature_element["Bloque"+str(building.id)] = dictionary
         feature_element[count] = dictionary
         count += 1
@@ -159,11 +159,7 @@ def token_user(request, name_user):
 @csrf_exempt
 def login(request):
     """Service for create user for create tokens"""
-    #print("fhdfhfghf")
-    #print("body:  ", json.loads(str(request.body)[2:-1]))
     datos = json.loads(str(request.body)[2:-1])
-    #print("entrooo")
-    #print("body:  ",request.headers)
     usuario = Users.objects.filter(username=datos.get("data").get("username"))
     if len(usuario) > 0:
         print(usuario[0])
@@ -210,35 +206,35 @@ def show_photo(request, codigo, token):
         return HttpResponseRedirect(url)
     return HttpResponse("Token Invalido")
 
-def add_favorite(request):
-    """Service for add favorite POIs for a user"""
+
+@csrf_exempt
+def favorites(request):
+    """Service for get favorites POIs for a user"""
     if request.method == 'POST':
-        token = request.META["access-token"]
+        token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-        code = request["data"]["code_gtsi"]
+        datos = json.loads(str(request.body)[2:-1])
+        code = datos.get("code_gtsi")
         if len(user) > 0:
             building = Buildings.objects.filter(code_gtsi=code)
             favorites = Favorites()
-            favorites.id_buildings = building.id
-            favorites.id_users = user.id
+            favorites.id_buildings = building[0]
+            favorites.id_users = user[0]
             favorites.save()
 
-def get_favorites(request):
-    """Service for get favorites POIs for a user"""
-    if request.method == 'POST':
-        token = request.META["access-token"]
+    if request.method == 'GET':
+        token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-        code_pois_favorites = []
-        if len(user) > 0:
-            favorites = Favorites.objects.filter(id_users=user.id)
-            for fav in favorites:
-                building = Buildings.objects.filter(id=fav.id_buildings)
-                code_pois_favorites.append(building.code_gtsi)
-        feature = {"codes_gtsi": code_pois_favorites}
-        return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
-    return HttpResponse(json.dumps({}, ensure_ascii=False).encode("utf-8")\
-        , content_type='application/json')
+    code_pois_favorites = []
+    if len(user) > 0:
+        favorites = Favorites.objects.filter(id_users=user[0].id)
+        for fav in favorites:
+            building = Buildings.objects.filter(id=fav.id_buildings.id)
+            code_pois_favorites.append(building[0].code_gtsi)
+    feature = {"codes_gtsi": code_pois_favorites}
+    print(feature)
+    return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
+    , content_type='application/json')
 
 
 def get_building_centroid(request, code_gtsi):
