@@ -5,18 +5,11 @@ from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
+from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav
 from .models import Buildings, Users, Favorites
 
 
 
-def get_centroid(vertexes):
-    """Function for get centroid for shapes"""
-    _x_list = [vertex[0] for vertex in vertexes]
-    _y_list = [vertex[1] for vertex in vertexes]
-    _len = len(vertexes)
-    _x = sum(_x_list) / _len
-    _y = sum(_y_list) / _len
-    return(_x, _y)
 
 def obtain_buildings(request):
     """Funcion para poder obtener la information de los Buildings incluido los shapefiles o
@@ -74,49 +67,50 @@ def obtain_buildings_info(request):
 
 
 
-def building_info(request, code_gtsi, token):
+def building_info(request, code_gtsi):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-    usuario = Users.objects.filter(token=token)
-    if len(usuario) > 0:
-        dictionary = {}
-        info_list = []
-        building = Buildings.objects.filter(code_gtsi=code_gtsi)
-        #If there are no buildings or more than one with that pk
-        #Return empty dictionary
-        if len(building) != 1:
+    if request.method == 'POST':
+        token = request.META["HTTP_ACCESS_TOKEN"]
+        usuario = Users.objects.filter(token=token)
+        if len(usuario) > 0:
+            dictionary = {}
+            info_list = []
+            building = Buildings.objects.filter(code_gtsi=code_gtsi)
+            #If there are no buildings or more than one with that pk
+            #Return empty dictionary
+            if len(building) != 1:
+                return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+                , content_type="application/json")
+            building = building[0]
+            feature_element = {}
+            feature_element["type"] = "Feature"
+            information = {"codigo": building.code_infra,
+                           "nombre": building.name, "unidad": building.unity}
+            information["bloque"] = building.code_infra
+            information["tipo"] = building.building_type
+            information["descripcio"] = building.description
+            feature_element["properties"] = information
+            geometry = {}
+            geometry["type"] = "Polygon"
+            external_coords = []
+            media_coords = []
+            geom_long = len(building.geom[0][0])
+            for i in range(geom_long):
+                coords_tuple = building.geom[0][0][i]
+                coordinates = []
+                coordinates.append(coords_tuple[1])
+                coordinates.append(coords_tuple[0])
+                media_coords.append(coordinates)
+                break
+            # print("SE ACABO EL POLIGONO")
+            external_coords.append(media_coords)
+            geometry["coordinates"] = external_coords
+            feature_element["geometry"] = geometry
+            info_list.append(feature_element)
+            dictionary["features"] = info_list
+            dictionary["type"] = "FeatureCollection"
             return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-            , content_type="application/json")
-        building = building[0]
-        feature_element = {}
-        feature_element["type"] = "Feature"
-        information = {"codigo": building.code_infra,
-                       "nombre": building.name, "unidad": building.unity}
-        information["bloque"] = building.code_infra
-        information["tipo"] = building.building_type
-        information["descripcio"] = building.description
-        feature_element["properties"] = information
-        geometry = {}
-        geometry["type"] = "Polygon"
-        external_coords = []
-        media_coords = []
-        geom_long = len(building.geom[0][0])
-        for i in range(geom_long):
-            coords_tuple = building.geom[0][0][i]
-            coordinates = []
-            coordinates.append(coords_tuple[1])
-            coordinates.append(coords_tuple[0])
-            media_coords.append(coordinates)
-            break
-        # print("SE ACABO EL POLIGONO")
-        external_coords.append(media_coords)
-        geometry["coordinates"] = external_coords
-        feature_element["geometry"] = geometry
-        info_list.append(feature_element)
-        dictionary["features"] = info_list
-        dictionary["type"] = "FeatureCollection"
-        return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-            , content_type="application/json")
-    return HttpResponse("Token Invalido")
+                , content_type="application/json")
 
 
 
@@ -154,7 +148,9 @@ def token_user(request, name_user):
     token = jwt_encode_handler(payload)
     user.token = str(token)
     user.save()
-    return HttpResponse(str(token))
+    datos_retornar = {"access-token": user.token}
+    return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')
 
 @csrf_exempt
 def login(request):
@@ -190,21 +186,22 @@ def login(request):
 
 
 
-def show_photo(request, codigo, token):
+def show_photo(request, codigo):
     """Return the photo of a block """
-    usuario = Users.objects.filter(token=token)
-    if len(usuario) > 0:
-        building = Buildings.objects.filter(code_infra=codigo)
-        if len(building) != 1:
-            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+    if request.method == 'GET':
+        token = request.META["HTTP_ACCESS_TOKEN"]
+        usuario = Users.objects.filter(token=token)
+        if len(usuario) > 0:
+            building = Buildings.objects.filter(code_infra=codigo)
+            if len(building) != 1:
+                url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+                return HttpResponseRedirect(url)
+            full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+            if full_path == None:
+                url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+            else:
+                url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
             return HttpResponseRedirect(url)
-        full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
-        if full_path == None:
-            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-        else:
-            url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
-        return HttpResponseRedirect(url)
-    return HttpResponse("Token Invalido")
 
 
 @csrf_exempt
@@ -216,11 +213,22 @@ def favorites(request):
         datos = json.loads(str(request.body)[2:-1])
         code = datos.get("code_gtsi")
         if len(user) > 0:
-            building = Buildings.objects.filter(code_gtsi=code)
-            favorites = Favorites()
-            favorites.id_buildings = building[0]
-            favorites.id_users = user[0]
-            favorites.save()
+            if not verify_favorite(code, user[0].username):
+                print(five_favorites(code, user[0].username))
+                if five_favorites(code, user[0].username):
+                    print("Poi nuevo")
+                    building = Buildings.objects.filter(code_gtsi=code)
+                    favorites = Favorites()
+                    favorites.id_buildings = building[0]
+                    favorites.id_users = user[0]
+                    favorites.save()
+                else:
+                    remove_oldest_fav(user[0].username)
+                    building = Buildings.objects.filter(code_gtsi=code)
+                    favorites = Favorites()
+                    favorites.id_buildings = building[0]
+                    favorites.id_users = user[0]
+                    favorites.save()
 
     if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
