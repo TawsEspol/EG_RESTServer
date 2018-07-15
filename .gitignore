@@ -125,3 +125,5 @@ espolguide_app/migrations/*
 espolguide_app/migrations/
 migrations/
 
+#settings
+espolguide/settings.py

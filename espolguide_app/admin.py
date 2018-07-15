@@ -8,5 +8,3 @@ admin.site.register(Users)
 admin.site.register(Buildings, admin.GeoModelAdmin)
 admin.site.register(Unities)
 
-
-

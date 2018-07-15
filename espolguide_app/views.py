@@ -60,7 +60,7 @@ def obtain_buildings_info(request):
         feature_element["type"] = "Feature"
         feature_element["identificador"] = "Bloque"+str(building.id)
         information = {"codigo": building.code_infra,
-                       "nombre": building.name, "unidad": building.unity}
+                       "nombre": building.name, "unidad": building.unity_name}
         information["bloque"] = building.code_infra
         information["tipo"] = building.building_type
         information["descripcio"] = building.description
@@ -84,13 +84,14 @@ def building_info(request, code_gtsi, token):
         #If there are no buildings or more than one with that pk
         #Return empty dictionary
         if len(building) != 1:
+            print(len(building))
             return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
             , content_type="application/json")
         building = building[0]
         feature_element = {}
         feature_element["type"] = "Feature"
         information = {"codigo": building.code_infra,
-                       "nombre": building.name, "unidad": building.unity}
+                       "nombre": building.name, "unidad": building.unity_name}
         information["bloque"] = building.code_infra
         information["tipo"] = building.building_type
         information["descripcio"] = building.description

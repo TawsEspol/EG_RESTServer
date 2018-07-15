@@ -2,6 +2,7 @@
 import datetime
 from django.contrib.gis.db import models
 from django.conf import settings
+from django.contrib.auth.models import BaseUserManager
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.user')
@@ -33,11 +34,17 @@ class Buildings(models.Model):
     name = models.CharField(max_length=80)
     name_infra = models.CharField(max_length=80)
     building_type = models.CharField(max_length=60)
-    description = models.CharField(max_length=150, null=True, blank=True)
+    description = models.CharField(max_length=150, null=True, blank=True, verbose_name='type')
     #unity = models.ForeignKey(Unities, to_field = "name", on_delete = models.CASCADE, null = True)
     unity_name = models.CharField(max_length=80, null=True)
     geom = models.MultiPolygonField(srid=4326)
     objects = models.Manager()
+
+    def __unicode__(self):
+        return self.name
+          
+    def __str__(self):
+        return self.name
 
 
 class Salons(models.Model):
@@ -91,3 +98,4 @@ class Favorites(models.Model):
     id_users = models.ForeignKey(Users, on_delete=models.CASCADE)
     time_of_create = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
+

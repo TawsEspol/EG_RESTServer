@@ -26,11 +26,15 @@ class CasoTest(TestCase):
 
     def building_info_test(self):
         token = self.factory.get('/apitokenauth/usuario_prueba_1')
-        request = self.factory.get('/obtainBuildingsInfo/BLOQUE 15A/'+token)
+        request = self.factory.get('/buildingInfo/BLOQUE 32D/'+token)
         self.assertEqual(response.status_code, 200)
 
-    def get_building_centroid(self):
-        request = self.factory.get('/coordinates/BLOQUE 15A/')
+    def get_building_centroid_test(self):
+        request = self.factory.get('/coordinates/BLOQUE 32D/')
+        self.assertEqual(response.status_code, 200)
+
+    def alternative_names_test(self):
+        request = self.factory.get('/alternativeNames')
         self.assertEqual(response.status_code, 200)
 
     
