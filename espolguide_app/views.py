@@ -69,7 +69,7 @@ def obtain_buildings_info(request):
 
 def building_info(request, code_gtsi):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-    if request.method == 'POST':
+    if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
         usuario = Users.objects.filter(token=token)
         if len(usuario) > 0:
