@@ -2,7 +2,7 @@
 """Views, archivo para el backend del servidor"""
 import json
 from rest_framework_jwt.settings import api_settings
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
 from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav
@@ -32,7 +32,6 @@ def obtain_buildings(request):
             coordinates.append(coords_tuple[1])
             coordinates.append(coords_tuple[0])
             media_coords.append(coordinates)
-        # print("SE ACABO EL POLIGONO")
         external_coords.append(media_coords)
         geometry["coordinates"] = external_coords
         feature_element["geometry"] = geometry
@@ -69,12 +68,11 @@ def obtain_buildings_info(request):
 
 def building_info(request, code_gtsi):
     """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
-
-    if request.method == 'POST':
+    if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
+        dictionary = {}
         usuario = Users.objects.filter(token=token)
         if len(usuario) > 0:
-            dictionary = {}
             info_list = []
             building = Buildings.objects.filter(code_gtsi=code_gtsi)
             #If there are no buildings or more than one with that pk
@@ -103,17 +101,16 @@ def building_info(request, code_gtsi):
                 coordinates.append(coords_tuple[0])
                 media_coords.append(coordinates)
                 break
-            # print("SE ACABO EL POLIGONO")
             external_coords.append(media_coords)
             geometry["coordinates"] = external_coords
             feature_element["geometry"] = geometry
             info_list.append(feature_element)
             dictionary["features"] = info_list
             dictionary["type"] = "FeatureCollection"
-            return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+        return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
                 , content_type="application/json")
-
-
+    else:
+        return HttpResponseNotFound('<h1>Invalid request</h1>')
 
 def alternative_names(request):
     """Returns the official and alternative names of a building """
@@ -159,11 +156,9 @@ def login(request):
     datos = json.loads(str(request.body)[2:-1])
     usuario = Users.objects.filter(username=datos.get("data").get("username"))
     if len(usuario) > 0:
-        print(usuario[0])
         user = Users.objects.get(username=datos.get("data").get("username"),\
          password=datos.get("data").get("username"))
         datos_retornar = {"access-token": user.token}
-        print("registardo: ", datos_retornar)
         return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
     usuario = Users()
@@ -180,7 +175,6 @@ def login(request):
     user.token = str(token)
     user.save()
     datos_retornar = {"access-token": user.token}
-    print("retorno: ", datos_retornar)
     return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
 
@@ -203,6 +197,10 @@ def show_photo(request, codigo):
             else:
                 url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
             return HttpResponseRedirect(url)
+        else:
+            return HttpResponse('<h1>Invalid user</h1>')
+    else:
+        return HttpResponseNotFound('<h1>Invalid request</h1>')
 
 
 @csrf_exempt
@@ -215,9 +213,7 @@ def favorites(request):
         code = datos.get("code_gtsi")
         if len(user) > 0:
             if not verify_favorite(code, user[0].username):
-                print(five_favorites(code, user[0].username))
                 if five_favorites(code, user[0].username):
-                    print("Poi nuevo")
                     building = Buildings.objects.filter(code_gtsi=code)
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
@@ -241,7 +237,6 @@ def favorites(request):
             building = Buildings.objects.filter(id=fav.id_buildings.id)
             code_pois_favorites.append(building[0].code_gtsi)
     feature = {"codes_gtsi": code_pois_favorites}
-    print(feature)
     return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
     , content_type='application/json')
 
