@@ -84,7 +84,7 @@ def building_info(request, code_gtsi):
             feature_element = {}
             feature_element["type"] = "Feature"
             information = {"codigo": building.code_infra,
-                           "nombre": building.name, "unidad": building.unity}
+                           "nombre": building.name, "unidad": building.unity_name}
             information["bloque"] = building.code_infra
             information["tipo"] = building.building_type
             information["descripcio"] = building.description
