@@ -126,4 +126,4 @@ espolguide_app/migrations/
 migrations/
 
 #settings
-#espolguide/settings.py
+espolguide/settings.py
