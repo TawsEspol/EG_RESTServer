@@ -184,21 +184,16 @@ def login(request):
 def show_photo(request, codigo):
     """Return the photo of a block """
     if request.method == 'GET':
-        token = request.META["HTTP_ACCESS_TOKEN"]
-        usuario = Users.objects.filter(token=token)
-        if len(usuario) > 0:
-            building = Buildings.objects.filter(code_infra=codigo)
-            if len(building) != 1:
-                url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-                return HttpResponseRedirect(url)
-            full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
-            if full_path == None:
-                url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-            else:
-                url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        building = Buildings.objects.filter(code_infra=codigo)
+        if len(building) != 1:
+            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
             return HttpResponseRedirect(url)
+        full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+        if full_path == None:
+            url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
         else:
-            return HttpResponse('<h1>Invalid user</h1>')
+            url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+        return HttpResponseRedirect(url)
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
@@ -264,9 +259,10 @@ def get_building_centroid(request, code_gtsi):
     return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
         , content_type="application/json")
 
+@csrf_exempt
 def delete_favorite(request):
     """Delete a favorite POIs from your list"""
-    if request.method == 'GET':
+    if request.method == 'POST':
         datos = json.loads(str(request.body)[2:-1])
         code_gtsi = datos.get("code_gtsi")
         token = request.META["HTTP_ACCESS_TOKEN"]
@@ -275,7 +271,7 @@ def delete_favorite(request):
             favorites = Favorites.objects.filter(id_users=user[0].id)
             for fav in favorites:
                 building = Buildings.objects.filter(id=fav.id_buildings.id)
-                if building.code_gtsi == code_gtsi:
+                if building[0].code_gtsi == code_gtsi:
                     fav.delete()
                     break
         if len(user) > 0:
