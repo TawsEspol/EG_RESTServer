@@ -1,8 +1,6 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .views import *
 from django.test import RequestFactory, TestCase
-from .models import User
-from .views import add_user, token_user, show_photo
 
 # Create your tests here.
 
@@ -24,11 +22,23 @@ class CasoTest(TestCase):
         response = obtain_buildings_info(request)
         self.assertEqual(response.status_code, 200)
 
-    def building_info_test(self):
-        token = self.factory.get('/apitokenauth/usuario_prueba_1')
+    def building_info_bad_token_test(self):
+        """Tests that given an existent username and an invalid token, and the code of the building,
+         the endpoint returns an empty json object """
+        token = ""
         request = self.factory.get('/buildingInfo/BLOQUE 32D/'+token)
+        response = building_info(request)
         self.assertEqual(response.status_code, 200)
 
+    def building_info_test(self):
+        """Tests that given an existent username and an valid token, and the code of the building,
+         the endpoint returns the information of a building in a json object """
+        c = Client()
+        response = c.post('/buildingInfo/BLOQUE 32D/', {})
+        json_response = response.json()
+        expected_result = {}
+        self.assertEqual(json_response, expected_result)
+        
     def get_building_centroid_test(self):
         request = self.factory.get('/coordinates/BLOQUE 32D/')
         self.assertEqual(response.status_code, 200)

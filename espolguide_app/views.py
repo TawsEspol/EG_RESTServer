@@ -12,8 +12,7 @@ from .models import Buildings, Users, Favorites
 
 
 def obtain_buildings(request):
-    """Funcion para poder obtener la information de los Buildings incluido los shapefiles o
-    poligonos para ubicarlos en la app"""
+    """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
     info_list = []
     buildings = Buildings.objects.all()
@@ -43,7 +42,7 @@ def obtain_buildings(request):
 
 
 def obtain_buildings_info(request):
-    """Funcion para obtener solo information de cloques sin incluir shapefiles"""
+    """Service that returns the information of all the buildings (excluding geometry)"""
     dictionary = {}
     info_list = []
     buildings = Buildings.objects.all()
@@ -67,7 +66,8 @@ def obtain_buildings_info(request):
 
 
 def building_info(request, code_gtsi):
-    """Funcion que recibe un codigo y devuelve la informacion del bloque con ese codigo"""
+    """Service that, given a gtsi code of a building, returns the information
+    of the building (including geometry)"""
     if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
         dictionary = {}
@@ -113,7 +113,8 @@ def building_info(request, code_gtsi):
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
 def alternative_names(request):
-    """Returns the official and alternative names of a building """
+    """Service that returns the official and alternative names of all the buildings. 
+    Used to populate the search bar of the Android app """
     feature_element = {}
     buildings = Buildings.objects.all()
     count = 1
@@ -130,7 +131,6 @@ def alternative_names(request):
         dictionary["code_gtsi"] = code_gtsi
         dictionary["alternative_names"] = info_list
         dictionary["type"] = building.building_type
-        #feature_element["Bloque"+str(building.id)] = dictionary
         feature_element[count] = dictionary
         count += 1
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("utf-8")\
@@ -138,7 +138,7 @@ def alternative_names(request):
 
 
 def token_user(request, name_user):
-    '''Function that generates tokens of users'''
+    '''Service that generates tokens of users'''
     jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
     jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
     user = Users.objects.get(username=name_user, password=name_user)
@@ -152,7 +152,7 @@ def token_user(request, name_user):
 
 @csrf_exempt
 def login(request):
-    """Service for create user for create tokens"""
+    """Service that creates a user that logged in for the first time"""
     datos = json.loads(str(request.body)[2:-1])
     usuario = Users.objects.filter(username=datos.get("data").get("username"))
     if len(usuario) > 0:
@@ -182,7 +182,7 @@ def login(request):
 
 
 def show_photo(request, codigo):
-    """Return the photo of a block """
+    """Service that returns the photo of a building, given its gtsi code """
     if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
         usuario = Users.objects.filter(token=token)
@@ -205,7 +205,7 @@ def show_photo(request, codigo):
 
 @csrf_exempt
 def favorites(request):
-    """Service for get favorites POIs for a user"""
+    """Service that returns the favorite POIs of a user"""
     if request.method == 'POST':
         token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
@@ -242,7 +242,7 @@ def favorites(request):
 
 
 def get_building_centroid(request, code_gtsi):
-    """Return centroid for buoldings"""
+    """Service that returns the centroid of a building"""
     dictionary = {}
     building = Buildings.objects.filter(code_gtsi=code_gtsi)
     #If there are no buildings or more than one with that code
