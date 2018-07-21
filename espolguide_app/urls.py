@@ -13,4 +13,6 @@ urlpatterns = [
     url(r'^login/', views.login),
     url(r'^favorites/', views.favorites),
     url(r'^coordinates/(?P<code_gtsi>[\w |\W ]+)/$', views.get_building_centroid),
+    url(r'^deleteFavorite/', views.delete_favorite),
 ]
+

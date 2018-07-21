@@ -263,3 +263,27 @@ def get_building_centroid(request, code_gtsi):
     dictionary["long"] = centroid[1]
     return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
         , content_type="application/json")
+
+def delete_favorite(request):
+    """Delete a favorite POIs from your list"""
+    if request.method == 'GET':
+        datos = json.loads(str(request.body)[2:-1])
+        code_gtsi = datos.get("code_gtsi")
+        token = request.META["HTTP_ACCESS_TOKEN"]
+        user = Users.objects.filter(token=token)
+        if len(user) > 0:
+            favorites = Favorites.objects.filter(id_users=user[0].id)
+            for fav in favorites:
+                building = Buildings.objects.filter(id=fav.id_buildings.id)
+                if building.code_gtsi == code_gtsi:
+                    fav.delete()
+                    break
+        if len(user) > 0:
+            favorites = Favorites.objects.filter(id_users=user[0].id)
+            for fav in favorites:
+                building = Buildings.objects.filter(id=fav.id_buildings.id)
+                code_pois_favorites.append(building[0].code_gtsi)
+        feature = {"codes_gtsi": code_pois_favorites}
+    return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
+    , content_type='application/json')
+            
