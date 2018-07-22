@@ -6,7 +6,6 @@ APP_NAME = 'espolguide_app'
 urlpatterns = [
     url(r'^obtainBuildings/', views.obtain_buildings),
     url(r'^obtainBuildingsInfo/', views.obtain_buildings_info),
-    url(r'^buildingInfo/(?P<code_gtsi>[\w|\W]+)', views.building_info),
     url(r'^alternativeNames/', views.alternative_names),
     url(r'^photoBlock/(?P<codigo>[\w|\W]*)', views.show_photo),
     url(r'^apitokenauth/(?P<name_user>[\w|\W]+)$', views.token_user),
