@@ -262,7 +262,9 @@ def get_building_centroid(request, code_gtsi):
 @csrf_exempt
 def delete_favorite(request):
     """Delete a favorite POIs from your list"""
+    code_pois_favorites = []
     if request.method == 'POST':
+        print("entroo llegoo")
         datos = json.loads(str(request.body)[2:-1])
         code_gtsi = datos.get("code_gtsi")
         token = request.META["HTTP_ACCESS_TOKEN"]
