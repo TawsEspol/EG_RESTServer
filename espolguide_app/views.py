@@ -63,55 +63,6 @@ def obtain_buildings_info(request):
         , content_type="application/json")
 
 
-
-
-def building_info(request, code_gtsi):
-    """Service that, given a gtsi code of a building, returns the information
-    of the building (including geometry)"""
-    if request.method == 'GET':
-        token = request.META["HTTP_ACCESS_TOKEN"]
-        dictionary = {}
-        usuario = Users.objects.filter(token=token)
-        if len(usuario) > 0:
-            info_list = []
-            building = Buildings.objects.filter(code_gtsi=code_gtsi)
-            #If there are no buildings or more than one with that pk
-            #Return empty dictionary
-            if len(building) != 1:
-                return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-                , content_type="application/json")
-            building = building[0]
-            feature_element = {}
-            feature_element["type"] = "Feature"
-            information = {"codigo": building.code_infra,
-                           "nombre": building.name, "unidad": building.unity_name}
-            information["bloque"] = building.code_infra
-            information["tipo"] = building.building_type
-            information["descripcio"] = building.description
-            feature_element["properties"] = information
-            geometry = {}
-            geometry["type"] = "Polygon"
-            external_coords = []
-            media_coords = []
-            geom_long = len(building.geom[0][0])
-            for i in range(geom_long):
-                coords_tuple = building.geom[0][0][i]
-                coordinates = []
-                coordinates.append(coords_tuple[1])
-                coordinates.append(coords_tuple[0])
-                media_coords.append(coordinates)
-                break
-            external_coords.append(media_coords)
-            geometry["coordinates"] = external_coords
-            feature_element["geometry"] = geometry
-            info_list.append(feature_element)
-            dictionary["features"] = info_list
-            dictionary["type"] = "FeatureCollection"
-        return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-                , content_type="application/json")
-    else:
-        return HttpResponseNotFound('<h1>Invalid request</h1>')
-
 def alternative_names(request):
     """Service that returns the official and alternative names of all the buildings. 
     Used to populate the search bar of the Android app """
@@ -177,7 +128,6 @@ def login(request):
     datos_retornar = {"access-token": user.token}
     return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
-
 
 
 
@@ -248,6 +198,7 @@ def get_building_centroid(request, code_gtsi):
     #If there are no buildings or more than one with that code
     #Return empty dictionary
     if len(building) != 1:
+        print("adsfhaiusdh")
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
         , content_type="application/json")
     building = building[0]
@@ -257,8 +208,8 @@ def get_building_centroid(request, code_gtsi):
         coords_tuple = building.geom[0][0][i]
         coordinates = (coords_tuple[1], coords_tuple[0])
         points.append(coordinates)
+    print(points)
     centroid = get_centroid(points)
-
     dictionary["lat"] = centroid[0]
     dictionary["long"] = centroid[1]
     return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
@@ -284,6 +235,8 @@ def delete_favorite(request):
                 building = Buildings.objects.filter(id=fav.id_buildings.id)
                 code_pois_favorites.append(building[0].code_gtsi)
         feature = {"codes_gtsi": code_pois_favorites}
-    return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
-    , content_type='application/json')
+        return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
+        , content_type='application/json')
+    else:
+        return HttpResponseNotFound('<h1>Invalid request</h1>')
             
