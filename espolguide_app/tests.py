@@ -67,22 +67,22 @@ class CasoTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def get_building_centroid(self):
-        """Tests that, given a gtsi_code=BLOQUE 32C, it returns the correct coordinates 
+        """Tests that, given a gtsi_code=BLOQUE 15A, it returns the correct coordinates 
         of its centroid lat:-2.14716904758766, long:-79.96780304424358 """
-        response = self.factory.get('/coordinates/BLOQUE 32C')
+        response = self.factory.get('/coordinates/BLOQUE 15A')
         expected_result = {'lat':-2.14716904758766,'long':-79.96780304424358}
         self.assertEqual(response.json(), expected_result)
 
     def show_photo_test(self):
         """Tests that, given a code_gtsi of a building, a photo of the building is returned"""
-        response = self.factory.get('/photoBlock/BLOQUE 32C')
+        response = self.factory.get('/photoBlock/BLOQUE 15A')
         self.assertEqual(response.status_code, 200)
 
     def add_favorites_test(self):
         """Tests that, given a code_gtsi code of a building and a token of a user, the service 
         adds the building to the list of favorites of the user, and returns the list"""
-        response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 32C"})
-        favs = ["BLOQUE 32C"]
+        response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 15A"})
+        favs = ["BLOQUE 15A"]
         expected_result = {"code_gtsi":favs}
         self.assertEqual(response.json(), expected_result)
 
@@ -90,7 +90,7 @@ class CasoTest(TestCase):
         """Tests that, given the token of the user, the service returns the list of favorite pois 
         of the user"""
         response = self.client.get('/favorites/')
-        favs = ["BLOQUE 32C"]
+        favs = ["BLOQUE 15A"]
         expected_result = {"code_gtsi":favs}
         self.assertEqual(response.json(), expected_result)
 
@@ -98,4 +98,4 @@ class CasoTest(TestCase):
         """Tests that, given a code_gtsi code of a building and a token of a user, 
         and that the user already has 5 favorite POIs, the service adds the building to the list 
         of favorites of the user, and returns the list"""
-        response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 32C"})
+        response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 15A"})
