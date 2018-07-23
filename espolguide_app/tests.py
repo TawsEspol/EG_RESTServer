@@ -75,7 +75,7 @@ class CasoTest(TestCase):
 
     def show_photo_test(self):
         """Tests that, given a code_gtsi of a building, a photo of the building is returned"""
-        response = self.factory.get('/photoBlock/BLOQUE 15A')
+        response = self.factory.get('/photoBlock/15A')
         self.assertEqual(response.status_code, 200)
 
     def add_favorites_test(self):
