@@ -39,7 +39,7 @@ class Buildings(models.Model):
     unity_name = models.CharField(max_length=80, null=True)
     geom = models.MultiPolygonField(srid=4326)
     objects = models.Manager()
-
+    photo = models.CharField(max_length=250, null=True)
     def __unicode__(self):
         return self.name
           
