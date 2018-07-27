@@ -121,9 +121,9 @@ static/
 
 
 #migrations
-espolguide_app/migrations/*
-espolguide_app/migrations/
-migrations/
+#espolguide_app/migrations/*
+#espolguide_app/migrations/
+#migrations/
 
 #settings file
 espolguide/settings.py
