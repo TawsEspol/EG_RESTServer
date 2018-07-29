@@ -24,6 +24,7 @@ def verify_favorite(code, user):
 
 def five_favorites(code, user):
     """Function for verify for user only 5 favorites"""
+    code_gtsi = code
     users = Users.objects.filter(username=user)
     favorites = Favorites.objects.filter(id_users=users[0])
     return len(favorites) < 5
@@ -33,5 +34,3 @@ def remove_oldest_fav(user):
     users = Users.objects.filter(username=user)
     favorites = Favorites.objects.filter(id_users=users[0]).order_by('time_of_create')
     favorites[0].delete()
-
-

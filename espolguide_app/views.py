@@ -64,7 +64,7 @@ def obtain_buildings_info(request):
 
 
 def alternative_names(request):
-    """Service that returns the official and alternative names of all the buildings. 
+    """Service that returns the official and alternative names of all the buildings.
     Used to populate the search bar of the Android app """
     feature_element = {}
     buildings = Buildings.objects.all()
@@ -237,4 +237,3 @@ def delete_favorite(request):
         , content_type='application/json')
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
-            

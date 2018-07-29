@@ -98,4 +98,4 @@ class CasoTest(TestCase):
         """Tests that, given a code_gtsi code of a building and a token of a user, 
         and that the user already has 5 favorite POIs, the service adds the building to the list 
         of favorites of the user, and returns the list"""
-        response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 15A"})
+response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 15A"})
