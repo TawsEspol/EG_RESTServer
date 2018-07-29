@@ -132,19 +132,6 @@ def login(request):
 
 def show_photo(request, codigo):
     """Service that returns the photo of a building, given its gtsi code """
-    # if request.method == 'GET':
-    #     building = Buildings.objects.filter(code_infra=codigo)
-    #     if len(building) != 1:
-    #         url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-    #         return HttpResponseRedirect(url)
-    #     full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
-    #     if full_path == None:
-    #         url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-    #     else:
-    #         url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
-    #     return HttpResponseRedirect(url)
-    # else:
-    #     return HttpResponseNotFound('<h1>Invalid request</h1>')
     if request.method == 'GET':
         building = Buildings.objects.filter(code_infra=codigo)
         if len(building) != 1:
@@ -152,16 +139,13 @@ def show_photo(request, codigo):
             return HttpResponseRedirect(url)
         else:
             source = "/home/belen/github/EG_RESTServer/espolguide_app/static/img/"+codigo+"/"+codigo+".JPG"
-            #photo = io.imread(source)
+            full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
+            if full_path == None:
+                url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
+                return HttpResponseRedirect(url)
             photo = cv2.imread(source)
             resized = cv2.resize(photo, (640,480), interpolation = cv2.INTER_AREA)
             photo = cv2.imencode('.jpg', resized)[1].tostring()
-            #photo = open(source, "rb").read()
-            #print("PHOTOTYPE: "+type(photo))
-            #photo_resized = resize(photo, (640, 480),anti_aliasing=True)
-
-            # with open(source, "rb") as image_file:
-            #photo = base64.b64encode(photo)
             return HttpResponse(photo,content_type="image/jpg")
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
