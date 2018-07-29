@@ -193,7 +193,6 @@ def get_building_centroid(request, code_gtsi):
     #If there are no buildings or more than one with that code
     #Return empty dictionary
     if len(building) != 1:
-        print("adsfhaiusdh")
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
         , content_type="application/json")
     building = building[0]
@@ -203,7 +202,6 @@ def get_building_centroid(request, code_gtsi):
         coords_tuple = building.geom[0][0][i]
         coordinates = (coords_tuple[1], coords_tuple[0])
         points.append(coordinates)
-    print(points)
     centroid = get_centroid(points)
     dictionary["lat"] = centroid[0]
     dictionary["long"] = centroid[1]
@@ -215,7 +213,6 @@ def delete_favorite(request):
     """Delete a favorite POIs from your list"""
     code_pois_favorites = []
     if request.method == 'POST':
-        print("entroo llegoo")
         datos = json.loads(str(request.body)[2:-1])
         code_gtsi = datos.get("code_gtsi")
         token = request.META["HTTP_ACCESS_TOKEN"]
