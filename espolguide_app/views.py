@@ -138,7 +138,7 @@ def show_photo(request, codigo):
             url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
             return HttpResponseRedirect(url)
         else:
-            source = "/home/belen/github/EG_RESTServer/espolguide_app/static/img/"+codigo+"/"+codigo+".JPG"
+            source = "/home/jonathan/software/repo/EG_RESTServer/espolguide_app/static/img/"+codigo+"/"+codigo+".JPG"
             full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
             if full_path == None:
                 url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
