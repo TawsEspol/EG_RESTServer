@@ -2,6 +2,11 @@
 import os
 from django.contrib.gis.utils import LayerMapping
 from .models import Buildings, Unities
+from dotenv import read_dotenv
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+read_dotenv(os.path.join(BASE_DIR, '.env'))
+
 # Auto-generated `LayerMapping` dictionary for Bloques model
 BLOQUES_MAPPING = {
     'code_infra': 'code_infra',
@@ -16,7 +21,7 @@ BLOQUES_MAPPING = {
 #BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
 #                                           'data/Bloques/prueba', 'datos-de-prueba.shp'),)
 
-BLOQUES_SHP = "/home/jonathan/con_geometria/bloques-unificados-con-geometria.shp"
+BLOQUES_SHP = os.getenv('SHAPES_PATH')
 def run(verbose=True):
     '''Funcion para cargar los shapefiles'''
     layer_map = LayerMapping(

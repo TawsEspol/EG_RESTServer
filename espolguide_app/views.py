@@ -10,6 +10,7 @@ from .models import Buildings, Users, Favorites
 import numpy as np
 import cv2
 
+
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
@@ -138,12 +139,11 @@ def show_photo(request, codigo):
             url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
             return HttpResponseRedirect(url)
         else:
-            source = "/home/jonathan/software/repo/EG_RESTServer/espolguide_app/static/img/"+codigo+"/"+codigo+".JPG"
             full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
             if full_path == None:
                 url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
                 return HttpResponseRedirect(url)
-            photo = cv2.imread(source)
+            photo = cv2.imread(full_path)
             resized = cv2.resize(photo, (640,480), interpolation = cv2.INTER_AREA)
             photo = cv2.imencode('.jpg', resized)[1].tostring()
             return HttpResponse(photo,content_type="image/jpg")

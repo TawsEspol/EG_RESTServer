@@ -11,9 +11,11 @@ class CasoTest(TestCase):
     def setUp(self):
         # Every test needs access to the request factory.
         self.factory = RequestFactory()
+        #user to test the test_add_favorite
         user = Users(username="usuario_prueba", password="usuario_prueba", token="usuario_prueba1")
         user.save()
         self.client = Client(HTTP_ACCESS_TOKEN="usuario_prueba1")
+        #user to test the add_6th_favorite_test
         user2 = Users(username="usuario_prueba_2", password="usuario_prueba_2", token="usuario_prueba2")
         user2.save()
         user2_id = user2.id
@@ -43,14 +45,16 @@ class CasoTest(TestCase):
         response = alternative_names(request)
         self.assertEqual(response.status_code, 200)
 
-    def test_token_user(self):
-        """Tests that, given a username, it returns its respective token"""
-        request = self.client.get('/apitokenauth/usuario_prueba')
-        response = request.json()
+    def test_login(self):
+        """Tests that a user can be created, given a username"""
+        python_dict = {"data": {"username": "usuario_prueba_2"}}
+        response = self.client.post('/login/', json.dumps(python_dict), content_type="application/json")
+        datos = response.json()
         #we do not know what token is generated, but the correct behaviour should be that the endpoint retunrs 
         #a json with 1 key called "access-token"
         #so we check that the returned json has a length of 1
-        self.assertEqual(len(response), 1)
+        self.assertEqual(len(datos),1)
+
 
     def test_get_building_centroid(self):
         """Tests that, given a gtsi_code=BLOQUE 15A, it returns the correct coordinates 
@@ -66,14 +70,15 @@ class CasoTest(TestCase):
         response = self.client.get('/photoBlock/15A')
         self.assertEqual(response.status_code, 200)
 
-    # def test_add_favorites(self):
-    #     """Tests that, given a code_gtsi code of a building and a token of a user, the service 
-    #     adds the building to the list of favorites of the user, and returns the list"""
-    #     response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 15A"})
-    #     favs = ["BLOQUE 15A"]
-    #     response = response.json()
-    #     expected_result = {"code_gtsi":favs}
-    #     self.assertEqual(response, expected_result)
+    def test_add_favorites(self):
+        """Tests that, given a code_gtsi code of a building and a token of a user, the service 
+        adds the building to the list of favorites of the user, and returns the list"""
+        python_dict = {"code_gtsi": "BLOQUE 15A"}
+        response = self.client.post('/favorites/', json.dumps(python_dict), content_type="application/json")
+        favs = ["BLOQUE 15A"]
+        response = response.json()
+        expected_result = {"codes_gtsi":favs}
+        self.assertEqual(response, expected_result)
 
     def test_get_favorites(self):
         """Tests that, given the token of the user, the service returns the list of favorite pois 
@@ -83,13 +88,16 @@ class CasoTest(TestCase):
         expected_result = {"codes_gtsi":favs}
         self.assertEqual(response.json(), expected_result)
 
-    # def add_6th_favorite_test(self):
-    #     """Tests that, given a code_gtsi code of a building and a token of a user, 
-    #     and that the user already has 5 favorite POIs, the service adds the building to the list 
-    #     of favorites of the user, and returns the list"""
-    #     response = self.client.post('/favorites/', {'code_gtsi':"BLOQUE 15A"})
+    def test_add_6th_favorite(self):
+        """Tests that, given a code_gtsi code of a building and a token of a user, 
+        and that the user already has 5 favorite POIs, the service adds the building to the list 
+        of favorites of the user, and returns the list"""
+        self.client = Client(HTTP_ACCESS_TOKEN="usuario_prueba2")
+        python_dict = {"code_gtsi": "BLOQUE 15A"}
+        response = self.client.post('/favorites/', json.dumps(python_dict), content_type="application/json")
+        #favs = ["BLOQUE 32D", "BLOQUE 24A", "BLOQUE 32B", "BLOQUE 31B", "BLOQUE 15A"]
+        response = response.json()
+        #Check if the user has no more than 5 favorite pois and that BLOQUE 15A is in his favorites
+        returned_result = len(response["codes_gtsi"]) == 5 and "BLOQUE 15A" in response["codes_gtsi"]
+        self.assertEqual(returned_result, True)
 
-    # def login(self):
-    #     """Tests that a user can be created, given a username"""
-    #     response = self.client.post('/login/', {'data': {'username': "usuario_prueba1"}})
-    #     self.assertEqual(response.status_code, 200)
