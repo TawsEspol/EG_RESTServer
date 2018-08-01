@@ -95,7 +95,6 @@ class CasoTest(TestCase):
         self.client = Client(HTTP_ACCESS_TOKEN="usuario_prueba2")
         python_dict = {"code_gtsi": "BLOQUE 15A"}
         response = self.client.post('/favorites/', json.dumps(python_dict), content_type="application/json")
-        #favs = ["BLOQUE 32D", "BLOQUE 24A", "BLOQUE 32B", "BLOQUE 31B", "BLOQUE 15A"]
         response = response.json()
         #Check if the user has no more than 5 favorite pois and that BLOQUE 15A is in his favorites
         returned_result = len(response["codes_gtsi"]) == 5 and "BLOQUE 15A" in response["codes_gtsi"]

@@ -1,0 +1,32 @@
+language: python
+
+python:
+  - "3.5"
+
+services:
+  - postgresql
+  - postgis
+env:
+  - DJANGO=2.0.1 DB=postgres
+
+# Whitelisting example
+branches:
+  only:
+    - photos
+
+# command to install dependencies
+install:
+  - "pip install -r requirements.txt"
+
+before_script:
+
+  - sudo -u postgres createuser -P guiders
+  - sudo -u postgres createdb -O guiders espolguide_db
+  - sudo -u postgres psql -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;" espolguide_db
+  - sudo -u postgres psql -c "ALTER ROLE guiders SUPERUSER;" espolguide_db
+
+script:
+  coverage run --source=espolguide_app manage.py test
+
+after_success:
+  coveralls
