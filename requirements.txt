@@ -6,3 +6,4 @@ djangorestframework-jwt
 djangorestframework
 python-coveralls
 opencv-python
+numpy

@@ -2,7 +2,9 @@ from django.test import TestCase, Client
 from .views import *
 from django.test import RequestFactory, TestCase
 from .models import Users, Buildings, Favorites
-from .load import run
+from django.core.management import call_command
+import os
+script_dir = os.path.dirname(__file__)
 # Create your tests here.
 
 class CasoTest(TestCase):
@@ -19,7 +21,9 @@ class CasoTest(TestCase):
         user2 = Users(username="usuario_prueba_2", password="usuario_prueba_2", token="usuario_prueba2")
         user2.save()
         user2_id = user2.id
-        run()
+        rel_path = '../dumps/buildings.json'
+        abs_file_path = os.path.join(script_dir, rel_path)
+        call_command('loaddata', abs_file_path, verbosity=0) 
         buildings = ["BLOQUE 32A","BLOQUE 32D", "BLOQUE 24A", "BLOQUE 32B", "BLOQUE 31B"]
         for building in buildings:
             building_obj = Buildings.objects.filter(code_gtsi=building)
