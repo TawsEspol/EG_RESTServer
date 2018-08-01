@@ -12,7 +12,7 @@ env:
 # Whitelisting example
 branches:
   only:
-    - photos
+    - development
 
 # command to install dependencies
 install:
