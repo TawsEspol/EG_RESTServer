@@ -24,5 +24,9 @@ before_script:
 - psql -c 'create database espolguide_db;' -U postgres
 - sudo -u postgres psql -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
   espolguide_db
-script: python manage.py collectstatic python manage.py test
-after_success: coverage report
+script: 
+- python manage.py collectstatic 
+- python manage.py test
+
+after_success: 
+- coverage report
