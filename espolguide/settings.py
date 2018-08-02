@@ -171,6 +171,6 @@ else:
 # Extra places for collectstatic to find static files.
 
 STATICFILES_DIRS = (
-    '/home/belen/github/EG_RESTServer/espolguide_app/static/img',
+    #'/home/belen/github/EG_RESTServer/espolguide_app/static/img',
     #'/home/manager/EG_RESTServer/espolguide_app/static/img',
 )
