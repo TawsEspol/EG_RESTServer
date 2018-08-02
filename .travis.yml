@@ -26,6 +26,7 @@ before_script:
   espolguide_db
 script: 
 - python manage.py collectstatic 
+- yes
 - python manage.py test
 
 after_success: 
