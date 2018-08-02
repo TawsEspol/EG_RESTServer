@@ -25,8 +25,7 @@ before_script:
 - sudo -u postgres psql -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
   espolguide_db
 script: 
-- python manage.py collectstatic 
-- yes
+- python manage.py collectstatic --noinput
 - python manage.py test
 
 after_success: 
