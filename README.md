@@ -11,7 +11,7 @@ EspolGuide es un aplicacion que ayudara a todos los estudiantes de ESPOL a ubica
 
 ## Prerequisitos
 
-Antes de iniciar el servidor se debe constar con la instalacion de cierto modulos indispensables para correr el servidor,los modulos y programas que necesitamos tener instalados son:
+Antes de iniciar el servidor se debe constar con la instalación de cierto módulos indispensables para correr el servidor. Los módulos y programas que necesitamos tener instalados son:
 
 ```sh
 python version 3.6
@@ -19,6 +19,7 @@ django version 2.0.1
 postgis version 2.3
 psycog para python3
 apache version 2
+virtualenv con python 3
 
 ```
 
@@ -28,6 +29,8 @@ apache version 2
 OS X y Linux:
 
 ```sh
+source env_name/bin/activate
+pip install -r requirements.txt
 python manage.py shell
 ```
 
@@ -51,12 +54,12 @@ python manage.py runserver tu_ip_publica:8000
 
 
 
-## como Agregar tu IP PUBLICA a nuestro servidor
+## como Agregar tu IP PÚBLICA a nuestro servidor
 
-Conociendo tu IP PUBLICA solo basta con agregarla en esta linea, en el archivo settings.py.
+Conociendo tu IP PÚBLICA solo basta con agregarla en esta línea, en el archivo settings.py.
 ![](ip.png)
 
-Nota: La IP PUBLICA cambia dependiendo a la red que se este conectado.
+Nota: La IP PÚBLICA cambia dependiendo de la red en la que se esté conectado.
 
 
 

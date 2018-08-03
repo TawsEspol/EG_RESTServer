@@ -1,0 +1,4 @@
+[run]
+omit=
+    manage.py
+    espolguide_app/^(?!tests|views).py$
