@@ -4,6 +4,7 @@ psycopg2-binary
 django-dotenv==1.4.1
 djangorestframework-jwt
 djangorestframework
-python-coveralls
+coverage
 opencv-python
 numpy
+codecov
