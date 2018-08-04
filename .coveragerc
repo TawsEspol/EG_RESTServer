@@ -3,5 +3,5 @@ omit =
     # omit anything in a .local directory anywhere
     manage.py
     # omit everything in /usr
-    /espolguide_app/^(?!tests|views).py
+    espolguide_app\/(?!tests|views)\.py
 
