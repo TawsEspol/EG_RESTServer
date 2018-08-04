@@ -1,4 +1,7 @@
 [run]
-omit=
+omit =
+    # omit anything in a .local directory anywhere
     manage.py
-    espolguide_app/^(?!tests|views).py$
+    # omit everything in /usr
+    /espolguide_app/^(?!tests|views).py
+
