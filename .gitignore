@@ -5,13 +5,15 @@ static/
 *.png
 
 # Byte-compiled / optimized / DLL files
+espolguide_app/__pycache__/
 __pycache__/
 espolguide_app/__pycache__/*
 espolguide_app/__pycache__/*.pyc
+__pycache__/*
 *.py[cod]
 *$py.class
 *.pyc
-espolguide_app/migrations/*
+
 # C extensions
 *.so
 
@@ -96,6 +98,8 @@ celerybeat-schedule
 venv/
 ENV/
 my_venv/
+*/my_venv/*
+my_venv/*
 
 # Spyder project settings
 .spyderproject
@@ -111,10 +115,15 @@ my_venv/
 .mypy_cache/
 
 #staticfiles
-staticfiles/
 */static
 espolguide_app/static
 static/
 
+
 #migrations
-espolguide_app/migrations
+espolguide_app/migrations/*
+espolguide_app/migrations/
+migrations/
+
+#settings file
+espolguide/settings.py

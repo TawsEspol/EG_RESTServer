@@ -1,0 +1,15 @@
+[run]
+omit =
+    # omit anything in a .local directory anywhere
+    manage.py
+    # omit everything in /usr
+    espolguide_app/admin.py
+    espolguide_app/apps.py
+    espolguide_app/load.py
+    espolguide_app/migrations/*
+    espolguide_app/utils.py
+    espolguide_app/urls.py
+
+
+
+
