@@ -38,7 +38,7 @@ class Buildings(models.Model):
     #unity = models.ForeignKey(Unities, to_field = "name", on_delete = models.CASCADE, null = True)
     unity_name = models.CharField(max_length=80, null=True)
     geom = models.MultiPolygonField(srid=4326)
-    alternative_names = models.CharField(max_length=500, null=True)
+    alternative_names = models.CharField(max_length=500, null=True, blank=True)
     objects = models.Manager()
     #photo = models.CharField(max_length=250, null=True)
     def __unicode__(self):
