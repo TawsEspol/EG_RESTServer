@@ -5,10 +5,10 @@ from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
+import cv2
+import numpy as np
 from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav
 from .models import Buildings, Users, Favorites
-import numpy as np
-import cv2
 
 
 def obtain_buildings(request):
@@ -144,9 +144,9 @@ def show_photo(request, codigo):
                 url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
                 return HttpResponseRedirect(url)
             photo = cv2.imread(full_path)
-            resized = cv2.resize(photo, (640,480), interpolation = cv2.INTER_AREA)
+            resized = cv2.resize(photo, (640, 480), interpolation=cv2.INTER_AREA)
             photo = cv2.imencode('.jpg', resized)[1].tostring()
-            return HttpResponse(photo,content_type="image/jpg")
+            return HttpResponse(photo, content_type="image/jpg")
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
@@ -159,17 +159,18 @@ def favorites(request):
         user = Users.objects.filter(token=token)
         datos = json.loads(str(request.body)[2:-1])
         code = datos.get("code_gtsi")
+        code_in = datos.get("code_gtsi")
         if len(user) > 0:
             if not verify_favorite(code, user[0].username):
                 if five_favorites(code, user[0].username):
-                    building = Buildings.objects.filter(code_gtsi=code)
+                    building = Buildings.objects.filter(code_gtsi=code, code_infra=code_in)
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
                     favorites.save()
                 else:
                     remove_oldest_fav(user[0].username)
-                    building = Buildings.objects.filter(code_gtsi=code)
+                    building = Buildings.objects.filter(code_gtsi=code, code_infra=code_in)
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
@@ -192,7 +193,7 @@ def favorites(request):
 def get_building_centroid(request, code_gtsi):
     """Service that returns the centroid of a building"""
     dictionary = {}
-    building = Buildings.objects.filter(code_gtsi=code_gtsi)
+    building = Buildings.objects.filter(code_gtsi=code_gtsi, code_infra=code_in)
     #If there are no buildings or more than one with that code
     #Return empty dictionary
     if len(building) != 1:
