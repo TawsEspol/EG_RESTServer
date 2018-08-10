@@ -31,32 +31,33 @@ class Buildings(models.Model):
      clasrooms and laboratories"""
     code_infra = models.CharField(max_length=60)
     code_gtsi = models.CharField(max_length=60)
-    name = models.CharField(max_length=80)
+    name_espol = models.CharField(max_length=80)
     name_infra = models.CharField(max_length=80)
     building_type = models.CharField(max_length=60)
-    description = models.CharField(max_length=150, null=True, blank=True, verbose_name='type')
+    description = models.CharField(max_length=250, null=True, blank=True, verbose_name='type')
     #unity = models.ForeignKey(Unities, to_field = "name", on_delete = models.CASCADE, null = True)
     unity_name = models.CharField(max_length=80, null=True)
     geom = models.MultiPolygonField(srid=4326)
+    alternative_names = models.CharField(max_length=500, null=True)
     objects = models.Manager()
     #photo = models.CharField(max_length=250, null=True)
     def __unicode__(self):
-        return self.name
+        return self.name_espol
           
     def __str__(self):
-        return self.name
+        return self.name_espol
 
 
 class Salons(models.Model):
     """Model for a salon inside a building. A salon can be a classroom, laboratory,
      dining room; any room inside a building"""
-    name = models.CharField(max_length=80)
+    name_espol = models.CharField(max_length=80)
     building = models.ForeignKey(Buildings, on_delete=models.CASCADE)
-    salon_type = models.CharField(max_length=60)
+    salon_type = models.CharField(max_length=60, null=True, blank=True)
     objects = models.Manager()
 
     def __str__(self):
-        return self.name
+        return self.name_espol
 
 
 class Users(models.Model):

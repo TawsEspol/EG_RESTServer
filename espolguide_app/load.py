@@ -1,27 +1,27 @@
 '''Script para cargar shapefiles en la base de datos se debe ejecutar en el shell de django'''
 import os
 from django.contrib.gis.utils import LayerMapping
-from .models import Buildings, Unities
+from .models import Buildings, Unities, Salons
 from dotenv import read_dotenv
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-read_dotenv(os.path.join(BASE_DIR, '.env'))
+#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#read_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Auto-generated `LayerMapping` dictionary for Bloques model
 BLOQUES_MAPPING = {
     'code_infra': 'code_infra',
     'code_gtsi': 'code_gtsi',
-    'name': 'name',
+    'name_espol': 'name_espol',
     'name_infra': 'name_infra',
     'unity_name' : 'unity',
     'building_type': 'building_t',
     'description': 'descriptio',
     'geom': 'MULTIPOLYGON',
 }
-#BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
-#                                           'data/Bloques/prueba', 'datos-de-prueba.shp'),)
+BLOQUES_SHP = os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                           '../data', 'bloques-unificados-con-geometria.shp'),)
 
-BLOQUES_SHP = os.getenv('SHAPES_PATH')
+#BLOQUES_SHP = os.getenv('SHAPES_PATH')
 def run(verbose=True):
     '''Funcion para cargar los shapefiles'''
     layer_map = LayerMapping(
@@ -43,3 +43,18 @@ def load_unities():
 
     file.close()
 
+def load_salons():
+    file = open("/home/belen/github/EG_RESTServer/data/aULAS_2018_espolguide.csv","r")
+    file.readline()
+    for line in file:
+        data = line.strip().split(",")
+        salon_name = data[2]
+        building_code = data[3]
+        building = Buildings.objects.filter(code_gtsi=building_code)
+        if (len(building) == 1):
+            building = building[0]
+            salon = Salons(name_espol=salon_name, building=building)
+            salon.save()
+        else:
+            print(building_code)
+    file.close()
