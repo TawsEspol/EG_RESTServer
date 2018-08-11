@@ -34,3 +34,8 @@ def remove_oldest_fav(user):
     users = Users.objects.filter(username=user)
     favorites = Favorites.objects.filter(id_users=users[0]).order_by('time_of_create')
     favorites[0].delete()
+
+def beautify_name(name):
+    if not any(char.isdigit() for char in name):
+        name = name.capitalize()
+    return name

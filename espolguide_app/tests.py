@@ -72,7 +72,7 @@ class CasoTest(TestCase):
     def test_show_photo(self):
         """Tests that, given a code_gtsi of a building, a photo of the building is returned"""
         response = self.client.get('/photoBlock/15A')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
 
     def test_add_favorites(self):
         """Tests that, given a code_gtsi code of a building and a token of a user, the service 
