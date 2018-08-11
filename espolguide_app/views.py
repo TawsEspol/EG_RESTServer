@@ -80,6 +80,11 @@ def alternative_names(request):
         code_gtsi = building.code_gtsi
         if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(building.code_gtsi)
+        alternative_names = building.alternative_names
+        if ( alternative_names is not None and alternative_names != ""):
+            names = alternative_names.strip().split(",")
+            for name in names:
+                info_list.append(name)
         dictionary["code_gtsi"] = code_gtsi
         dictionary["alternative_names"] = info_list
         dictionary["type"] = building.building_type
