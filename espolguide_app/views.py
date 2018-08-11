@@ -166,7 +166,7 @@ def show_photo(request, codigo):
             if full_path == None:
                 url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
             else:
-            url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+                url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
             return HttpResponseRedirect(url)
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
