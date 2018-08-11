@@ -159,7 +159,7 @@ def favorites(request):
         user = Users.objects.filter(token=token)
         datos = json.loads(str(request.body)[2:-1])
         code = datos.get("code_gtsi")
-        code_in = datos.get("code_gtsi")
+        code_in = datos.get("code_infra")
         if len(user) > 0:
             if not verify_favorite(code, user[0].username):
                 if five_favorites(code, user[0].username):
