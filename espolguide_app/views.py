@@ -5,10 +5,10 @@ from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
-import cv2
+from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav, beautify_name
+from .models import Buildings, Users, Favorites, Salons
 import numpy as np
-from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav
-from .models import Buildings, Users, Favorites
+import cv2
 
 
 def obtain_buildings(request):
@@ -51,7 +51,7 @@ def obtain_buildings_info(request):
         feature_element["type"] = "Feature"
         feature_element["identificador"] = "Bloque"+str(building.id)
         information = {"codigo": building.code_infra,
-                       "nombre": building.name, "unidad": building.unity_name}
+                       "nombre": building.name_espol, "unidad": building.unity_name}
         information["bloque"] = building.code_infra
         information["tipo"] = building.building_type
         information["descripcio"] = building.description
@@ -69,19 +69,42 @@ def alternative_names(request):
     feature_element = {}
     buildings = Buildings.objects.all()
     count = 1
+    #Adding buildings
     for building in buildings:
         dictionary = {}
-        dictionary["name"] = building.name
+        dictionary["name_espol"] = building.name_espol
         info_list = []
-        code_infra = building.code_infra
-        if (code_infra is not None and code_infra != ""):
-            info_list.append("Bloque "+building.code_infra)
+        #code_infra = building.code_infra
+        #if (code_infra is not None and code_infra != ""):
+            #info_list.append("Bloque "+building.code_infra)
         code_gtsi = building.code_gtsi
         if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(building.code_gtsi)
+        alternative_names = building.alternative_names
+        if ( alternative_names is not None and alternative_names != ""):
+            names = alternative_names.strip().split(",")
+            for name in names:
+                info_list.append(name)
         dictionary["code_gtsi"] = code_gtsi
         dictionary["alternative_names"] = info_list
         dictionary["type"] = building.building_type
+        feature_element[count] = dictionary
+        count += 1
+    #Adding salons
+    salons = Salons.objects.all()
+    for salon in salons:
+        dictionary = {}
+        dictionary["name_espol"] = beautify_name(salon.name_espol)
+        info_list = []
+        code_gtsi = salon.building.code_gtsi
+        dictionary["code_gtsi"] = code_gtsi
+        if (code_gtsi is not None and code_gtsi != ""):
+            info_list.append(code_gtsi)
+        unity = salon.building.unity_name
+        if (unity is not None and unity != ""):
+            info_list.append(unity)
+        dictionary["alternative_names"] = info_list
+        dictionary["type"] = "Aulas"
         feature_element[count] = dictionary
         count += 1
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("utf-8")\
@@ -142,11 +165,9 @@ def show_photo(request, codigo):
             full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
             if full_path == None:
                 url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-                return HttpResponseRedirect(url)
-            photo = cv2.imread(full_path)
-            resized = cv2.resize(photo, (640, 480), interpolation=cv2.INTER_AREA)
-            photo = cv2.imencode('.jpg', resized)[1].tostring()
-            return HttpResponse(photo, content_type="image/jpg")
+            else:
+                url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+            return HttpResponseRedirect(url)
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
@@ -197,6 +218,7 @@ def get_building_centroid(request, code_gtsi,code_in):
     #If there are no buildings or more than one with that code
     #Return empty dictionary
     if len(building) != 1:
+        print ("asdfads")
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
         , content_type="application/json")
     building = building[0]
