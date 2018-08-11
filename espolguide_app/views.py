@@ -190,7 +190,7 @@ def favorites(request):
     , content_type='application/json')
 
 
-def get_building_centroid(request, code_gtsi):
+def get_building_centroid(request, code_gtsi,code_in):
     """Service that returns the centroid of a building"""
     dictionary = {}
     building = Buildings.objects.filter(code_gtsi=code_gtsi, code_infra=code_in)
