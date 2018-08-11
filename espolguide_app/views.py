@@ -11,6 +11,7 @@ import numpy as np
 import cv2
 
 
+
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
@@ -180,17 +181,18 @@ def favorites(request):
         user = Users.objects.filter(token=token)
         datos = json.loads(str(request.body)[2:-1])
         code = datos.get("code_gtsi")
+        code_in = datos.get("code_infra")
         if len(user) > 0:
             if not verify_favorite(code, user[0].username):
                 if five_favorites(code, user[0].username):
-                    building = Buildings.objects.filter(code_gtsi=code)
+                    building = Buildings.objects.filter(code_gtsi=code, code_infra=code_in)
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
                     favorites.save()
                 else:
                     remove_oldest_fav(user[0].username)
-                    building = Buildings.objects.filter(code_gtsi=code)
+                    building = Buildings.objects.filter(code_gtsi=code, code_infra=code_in)
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
@@ -210,10 +212,10 @@ def favorites(request):
     , content_type='application/json')
 
 
-def get_building_centroid(request, code_gtsi):
+def get_building_centroid(request, code_gtsi,code_in):
     """Service that returns the centroid of a building"""
     dictionary = {}
-    building = Buildings.objects.filter(code_gtsi=code_gtsi)
+    building = Buildings.objects.filter(code_gtsi=code_gtsi, code_infra=code_in)
     #If there are no buildings or more than one with that code
     #Return empty dictionary
     if len(building) != 1:
