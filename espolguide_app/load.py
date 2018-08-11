@@ -3,8 +3,8 @@ import os
 from django.contrib.gis.utils import LayerMapping
 from .models import Buildings, Unities, Salons
 from dotenv import read_dotenv
+import cv2
 
-#BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 #read_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # Auto-generated `LayerMapping` dictionary for Bloques model
@@ -58,3 +58,15 @@ def load_salons():
         else:
             print(building_code)
     file.close()
+
+def compress_statics():
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    static_dir = os.path.join(BASE_DIR,"img")
+    img_dirs = [os.path.join(static_dir, f) for f in os.listdir(static_dir)]
+    for img_dir in img_dirs:
+        img = os.listdir(img_dir)[0]
+        img_path = img_dir+"/"+img
+        if (img!="espol.png"):
+            photo = cv2.imread(img_path)
+            resized = cv2.resize(photo, (640,480), interpolation = cv2.INTER_AREA)
+            cv2.imwrite(img_path, resized)
