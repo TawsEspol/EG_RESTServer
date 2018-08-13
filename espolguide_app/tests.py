@@ -63,8 +63,9 @@ class CasoTest(TestCase):
     def test_get_building_centroid(self):
         """Tests that, given a gtsi_code=BLOQUE 15A, it returns the correct coordinates 
         of its centroid lat:-2.14716904758766, long:-79.96780304424358 """
-        request = self.client.get('/coordinates/BLOQUE 15A/')
-        response = request.json()
+        python_dict = {"code_gtsi": "BLOQUE 15A", "code_infra":"15A"}
+        response = self.client.post('/coordinates/', json.dumps(python_dict), content_type="application/json")
+        response = response.json()
         expected_result = {'lat':-2.1446204723353177,'long':-79.96768222340235}
         result = response["lat"]==expected_result["lat"] and response["long"]==expected_result["long"]
         self.assertEqual(result, True)
@@ -77,11 +78,11 @@ class CasoTest(TestCase):
     def test_add_favorites(self):
         """Tests that, given a code_gtsi code of a building and a token of a user, the service 
         adds the building to the list of favorites of the user, and returns the list"""
-        python_dict = {"code_gtsi": "BLOQUE 15A"}
+        python_dict = {"code_gtsi": "BLOQUE 15A", "code_infra":"15A"}
         response = self.client.post('/favorites/', json.dumps(python_dict), content_type="application/json")
         favs = ["BLOQUE 15A"]
         response = response.json()
-        expected_result = {"codes_gtsi":favs}
+        expected_result = {"codes_gtsi":favs,"codes_infra":["15A"]}
         self.assertEqual(response, expected_result)
 
     def test_get_favorites(self):
@@ -89,7 +90,7 @@ class CasoTest(TestCase):
         of the user"""
         response = self.client.get('/favorites/')
         favs = []
-        expected_result = {"codes_gtsi":favs}
+        expected_result = {"codes_gtsi":favs,"codes_infra":favs}
         self.assertEqual(response.json(), expected_result)
 
     def test_add_6th_favorite(self):
@@ -97,7 +98,7 @@ class CasoTest(TestCase):
         and that the user already has 5 favorite POIs, the service adds the building to the list 
         of favorites of the user, and returns the list"""
         self.client = Client(HTTP_ACCESS_TOKEN="usuario_prueba2")
-        python_dict = {"code_gtsi": "BLOQUE 15A"}
+        python_dict = {"code_gtsi": "BLOQUE 15A", "code_infra":"15A"}
         response = self.client.post('/favorites/', json.dumps(python_dict), content_type="application/json")
         response = response.json()
         #Check if the user has no more than 5 favorite pois and that BLOQUE 15A is in his favorites

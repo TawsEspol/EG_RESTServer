@@ -204,7 +204,6 @@ def favorites(request):
     if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-    print(user)
     code_pois_favorites_gtsi = []
     code_pois_favorites_infra = []
     if len(user) > 0:
@@ -220,7 +219,6 @@ def favorites(request):
             else:
                 code_pois_favorites_infra.append(building[0].code_infra)
     feature = {"codes_gtsi": code_pois_favorites_gtsi, "codes_infra": code_pois_favorites_infra}
-    print(feature)
     return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
     , content_type='application/json')
 
@@ -229,13 +227,11 @@ def get_building_centroid(request):
     """Service that returns the centroid of a building"""
     if request.method == 'POST':
         datos = str(request.body)
-        print(datos)
         datos = json.loads(datos[2:-1])
         code_gtsi = datos.get("code_gtsi")
         code_in = datos.get("code_infra")
         dictionary = {}
         building = Buildings.objects.filter(code_gtsi=code_gtsi.strip(), code_infra=code_in.strip())
-        print(building)
         if len(building) == 0:
             building = Buildings.objects.filter(code_gtsi=code_gtsi.strip())
 
