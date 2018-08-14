@@ -86,6 +86,7 @@ def alternative_names(request):
             for name in names:
                 info_list.append(name)
         dictionary["code_gtsi"] = code_gtsi
+        dictionary["code_infra"] = building.code_infra
         dictionary["alternative_names"] = info_list
         dictionary["type"] = building.building_type
         feature_element[count] = dictionary
@@ -97,7 +98,9 @@ def alternative_names(request):
         dictionary["name_espol"] = beautify_name(salon.name_espol)
         info_list = []
         code_gtsi = salon.building.code_gtsi
+        code_infra = salon.building.code_infra
         dictionary["code_gtsi"] = code_gtsi
+        dictionary["code_infra"] = code_infra
         if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(code_gtsi)
         unity = salon.building.unity_name
@@ -178,20 +181,21 @@ def favorites(request):
     if request.method == 'POST':
         token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-        datos = json.loads(str(request.body)[2:-1])
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
         code = datos.get("code_gtsi")
-        code_in = datos.get("code_infra")
+        code_in = datos["code_infra"]
         if len(user) > 0:
-            if not verify_favorite(code, user[0].username):
-                if five_favorites(code, user[0].username):
-                    building = Buildings.objects.filter(code_gtsi=code, code_infra=code_in)
+            if not verify_favorite(code.strip(), user[0].username, code_in):
+                if five_favorites(code.strip(), user[0].username):
+                    building = Buildings.objects.filter(code_gtsi=code.strip(), code_infra=code_in.strip())
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
                     favorites.save()
                 else:
                     remove_oldest_fav(user[0].username)
-                    building = Buildings.objects.filter(code_gtsi=code, code_infra=code_in)
+                    building = Buildings.objects.filter(code_gtsi=code.strip(), code_infra=code_in.strip())
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
@@ -200,39 +204,54 @@ def favorites(request):
     if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-    code_pois_favorites = []
+    code_pois_favorites_gtsi = []
+    code_pois_favorites_infra = []
     if len(user) > 0:
         favorites = Favorites.objects.filter(id_users=user[0].id)
         for fav in favorites:
             building = Buildings.objects.filter(id=fav.id_buildings.id)
-            code_pois_favorites.append(building[0].code_gtsi)
-    feature = {"codes_gtsi": code_pois_favorites}
+            if building[0].code_gtsi == "":
+                code_pois_favorites_gtsi.append(" ")
+            else:
+                code_pois_favorites_gtsi.append(building[0].code_gtsi)
+            if building[0].code_infra == "":
+                code_pois_favorites_infra.append(" ")
+            else:
+                code_pois_favorites_infra.append(building[0].code_infra)
+    feature = {"codes_gtsi": code_pois_favorites_gtsi, "codes_infra": code_pois_favorites_infra}
     return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
     , content_type='application/json')
 
-
-def get_building_centroid(request, code_gtsi,code_in):
+@csrf_exempt
+def get_building_centroid(request):
     """Service that returns the centroid of a building"""
-    dictionary = {}
-    building = Buildings.objects.filter(code_gtsi=code_gtsi, code_infra=code_in)
-    #If there are no buildings or more than one with that code
-    #Return empty dictionary
-    if len(building) != 1:
-        print ("asdfads")
+    if request.method == 'POST':
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
+        code_gtsi = datos.get("code_gtsi")
+        code_in = datos.get("code_infra")
+        dictionary = {}
+        building = Buildings.objects.filter(code_gtsi=code_gtsi.strip(), code_infra=code_in.strip())
+        if len(building) == 0:
+            building = Buildings.objects.filter(code_gtsi=code_gtsi.strip())
+
+        #If there are no buildings or more than one with that code
+        #Return empty dictionary
+        if len(building) != 1:
+            return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+            , content_type="application/json")
+        building = building[0]
+        points = []
+        geom_long = len(building.geom[0][0])
+        for i in range(geom_long):
+            coords_tuple = building.geom[0][0][i]
+            coordinates = (coords_tuple[1], coords_tuple[0])
+            points.append(coordinates)
+        centroid = get_centroid(points)
+        dictionary["lat"] = centroid[0]
+        dictionary["long"] = centroid[1]
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-        , content_type="application/json")
-    building = building[0]
-    points = []
-    geom_long = len(building.geom[0][0])
-    for i in range(geom_long):
-        coords_tuple = building.geom[0][0][i]
-        coordinates = (coords_tuple[1], coords_tuple[0])
-        points.append(coordinates)
-    centroid = get_centroid(points)
-    dictionary["lat"] = centroid[0]
-    dictionary["long"] = centroid[1]
-    return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-        , content_type="application/json")
+            , content_type="application/json")
 
 @csrf_exempt
 def delete_favorite(request):
@@ -250,12 +269,20 @@ def delete_favorite(request):
                 if building[0].code_gtsi == code_gtsi:
                     fav.delete()
                     break
+        code_pois_favorites_infra = []
         if len(user) > 0:
             favorites = Favorites.objects.filter(id_users=user[0].id)
             for fav in favorites:
                 building = Buildings.objects.filter(id=fav.id_buildings.id)
-                code_pois_favorites.append(building[0].code_gtsi)
-        feature = {"codes_gtsi": code_pois_favorites}
+                if building[0].code_gtsi == "":
+                    code_pois_favorites.append(" ")
+                else:
+                    code_pois_favorites.append(building[0].code_gtsi)
+                if building[0].code_infra == "":
+                    code_pois_favorites_infra.append(" ")
+                else:
+                    code_pois_favorites_infra.append(building[0].code_infra)
+        feature = {"codes_gtsi": code_pois_favorites,"codes_infra":code_pois_favorites_infra}
         return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
     else:

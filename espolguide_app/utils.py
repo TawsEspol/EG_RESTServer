@@ -12,10 +12,11 @@ def get_centroid(vertexes):
     _y = sum(_y_list) / _len
     return(_x, _y)
 
-def verify_favorite(code, user):
+def verify_favorite(code, user, code_in):
     """Function for verify if new POI or not"""
     users = Users.objects.filter(username=user)
-    building = Buildings.objects.filter(code_gtsi=code)
+    print(code, user, code_in)
+    building = Buildings.objects.filter(code_gtsi=code.strip(), code_infra=code_in.strip())
     favorites = Favorites.objects.filter(id_buildings=building[0])
     for obj in favorites:
         if obj.id_users.id == users[0].id:
@@ -39,3 +40,5 @@ def beautify_name(name):
     if not any(char.isdigit() for char in name):
         name = name.capitalize()
     return name
+
+
