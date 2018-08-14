@@ -30,9 +30,9 @@ before_script:
   espolguide_db
 script:
 - python manage.py collectstatic --noinput
-- python manage.py makemigrations|yess
+- yes|python manage.py makemigrations
 - python manage.py migrate
-- python manage.py test
+- yes|python manage.py test
 - coverage run --source='.' manage.py test espolguide_app
 
 after_success:
