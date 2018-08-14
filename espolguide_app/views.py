@@ -5,10 +5,8 @@ from rest_framework_jwt.settings import api_settings
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
 from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
-from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav
-from .models import Buildings, Users, Favorites
-import numpy as np
-import cv2
+from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav, beautify_name
+from .models import Buildings, Users, Favorites, Salons
 
 
 def obtain_buildings(request):
@@ -51,7 +49,7 @@ def obtain_buildings_info(request):
         feature_element["type"] = "Feature"
         feature_element["identificador"] = "Bloque"+str(building.id)
         information = {"codigo": building.code_infra,
-                       "nombre": building.name, "unidad": building.unity_name}
+                       "nombre": building.name_espol, "unidad": building.unity_name}
         information["bloque"] = building.code_infra
         information["tipo"] = building.building_type
         information["descripcio"] = building.description
@@ -69,19 +67,45 @@ def alternative_names(request):
     feature_element = {}
     buildings = Buildings.objects.all()
     count = 1
+    #Adding buildings
     for building in buildings:
         dictionary = {}
-        dictionary["name"] = building.name
+        dictionary["name_espol"] = building.name_espol
         info_list = []
-        code_infra = building.code_infra
-        if (code_infra is not None and code_infra != ""):
-            info_list.append("Bloque "+building.code_infra)
+        #code_infra = building.code_infra
+        #if (code_infra is not None and code_infra != ""):
+            #info_list.append("Bloque "+building.code_infra)
         code_gtsi = building.code_gtsi
         if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(building.code_gtsi)
+        alternative_names = building.alternative_names
+        if  alternative_names is not None and alternative_names != "":
+            names = alternative_names.strip().split(",")
+            for name in names:
+                info_list.append(name)
         dictionary["code_gtsi"] = code_gtsi
+        dictionary["code_infra"] = building.code_infra
         dictionary["alternative_names"] = info_list
         dictionary["type"] = building.building_type
+        feature_element[count] = dictionary
+        count += 1
+    #Adding salons
+    salons = Salons.objects.all()
+    for salon in salons:
+        dictionary = {}
+        dictionary["name_espol"] = beautify_name(salon.name_espol)
+        info_list = []
+        code_gtsi = salon.building.code_gtsi
+        code_infra = salon.building.code_infra
+        dictionary["code_gtsi"] = code_gtsi
+        dictionary["code_infra"] = code_infra
+        if (code_gtsi is not None and code_gtsi != ""):
+            info_list.append(code_gtsi)
+        unity = salon.building.unity_name
+        if (unity is not None and unity != ""):
+            info_list.append(unity)
+        dictionary["alternative_names"] = info_list
+        dictionary["type"] = "Aulas"
         feature_element[count] = dictionary
         count += 1
     return HttpResponse(json.dumps(feature_element, ensure_ascii=False).encode("utf-8")\
@@ -142,11 +166,9 @@ def show_photo(request, codigo):
             full_path = finders.find("img/"+codigo+"/"+codigo+".JPG")
             if full_path == None:
                 url = "http://www.espol-guide.espol.edu.ec/static/img/espol/espol.png"
-                return HttpResponseRedirect(url)
-            photo = cv2.imread(full_path)
-            resized = cv2.resize(photo, (640,480), interpolation = cv2.INTER_AREA)
-            photo = cv2.imencode('.jpg', resized)[1].tostring()
-            return HttpResponse(photo,content_type="image/jpg")
+            else:
+                url = "http://www.espol-guide.espol.edu.ec/static/img/"+codigo+"/"+codigo+".JPG"
+            return HttpResponseRedirect(url)
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
@@ -157,19 +179,23 @@ def favorites(request):
     if request.method == 'POST':
         token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-        datos = json.loads(str(request.body)[2:-1])
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
         code = datos.get("code_gtsi")
+        code_in = datos["code_infra"]
         if len(user) > 0:
-            if not verify_favorite(code, user[0].username):
-                if five_favorites(code, user[0].username):
-                    building = Buildings.objects.filter(code_gtsi=code)
+            if not verify_favorite(code.strip(), user[0].username, code_in):
+                if five_favorites(code.strip(), user[0].username):
+                    building = Buildings.objects.filter(code_gtsi=code.strip(),\
+                     code_infra=code_in.strip())
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
                     favorites.save()
                 else:
                     remove_oldest_fav(user[0].username)
-                    building = Buildings.objects.filter(code_gtsi=code)
+                    building = Buildings.objects.filter(code_gtsi=code.strip(), \
+                        code_infra=code_in.strip())
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
@@ -178,38 +204,54 @@ def favorites(request):
     if request.method == 'GET':
         token = request.META["HTTP_ACCESS_TOKEN"]
         user = Users.objects.filter(token=token)
-    code_pois_favorites = []
+    code_pois_favorites_gtsi = []
+    code_pois_favorites_infra = []
     if len(user) > 0:
         favorites = Favorites.objects.filter(id_users=user[0].id)
         for fav in favorites:
             building = Buildings.objects.filter(id=fav.id_buildings.id)
-            code_pois_favorites.append(building[0].code_gtsi)
-    feature = {"codes_gtsi": code_pois_favorites}
+            if building[0].code_gtsi == "":
+                code_pois_favorites_gtsi.append(" ")
+            else:
+                code_pois_favorites_gtsi.append(building[0].code_gtsi)
+            if building[0].code_infra == "":
+                code_pois_favorites_infra.append(" ")
+            else:
+                code_pois_favorites_infra.append(building[0].code_infra)
+    feature = {"codes_gtsi": code_pois_favorites_gtsi, "codes_infra": code_pois_favorites_infra}
     return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
     , content_type='application/json')
 
-
-def get_building_centroid(request, code_gtsi):
+@csrf_exempt
+def get_building_centroid(request):
     """Service that returns the centroid of a building"""
-    dictionary = {}
-    building = Buildings.objects.filter(code_gtsi=code_gtsi)
-    #If there are no buildings or more than one with that code
-    #Return empty dictionary
-    if len(building) != 1:
+    if request.method == 'POST':
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
+        code_gtsi = datos.get("code_gtsi")
+        code_in = datos.get("code_infra")
+        dictionary = {}
+        building = Buildings.objects.filter(code_gtsi=code_gtsi.strip(), code_infra=code_in.strip())
+        if len(building) == 0:
+            building = Buildings.objects.filter(code_gtsi=code_gtsi.strip())
+
+        #If there are no buildings or more than one with that code
+        #Return empty dictionary
+        if len(building) != 1:
+            return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
+            , content_type="application/json")
+        building = building[0]
+        points = []
+        geom_long = len(building.geom[0][0])
+        for i in range(geom_long):
+            coords_tuple = building.geom[0][0][i]
+            coordinates = (coords_tuple[1], coords_tuple[0])
+            points.append(coordinates)
+        centroid = get_centroid(points)
+        dictionary["lat"] = centroid[0]
+        dictionary["long"] = centroid[1]
         return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-        , content_type="application/json")
-    building = building[0]
-    points = []
-    geom_long = len(building.geom[0][0])
-    for i in range(geom_long):
-        coords_tuple = building.geom[0][0][i]
-        coordinates = (coords_tuple[1], coords_tuple[0])
-        points.append(coordinates)
-    centroid = get_centroid(points)
-    dictionary["lat"] = centroid[0]
-    dictionary["long"] = centroid[1]
-    return HttpResponse(json.dumps(dictionary, ensure_ascii=False).encode("utf-8")\
-        , content_type="application/json")
+            , content_type="application/json")
 
 @csrf_exempt
 def delete_favorite(request):
@@ -227,12 +269,20 @@ def delete_favorite(request):
                 if building[0].code_gtsi == code_gtsi:
                     fav.delete()
                     break
+        code_pois_favorites_infra = []
         if len(user) > 0:
             favorites = Favorites.objects.filter(id_users=user[0].id)
             for fav in favorites:
                 building = Buildings.objects.filter(id=fav.id_buildings.id)
-                code_pois_favorites.append(building[0].code_gtsi)
-        feature = {"codes_gtsi": code_pois_favorites}
+                if building[0].code_gtsi == "":
+                    code_pois_favorites.append(" ")
+                else:
+                    code_pois_favorites.append(building[0].code_gtsi)
+                if building[0].code_infra == "":
+                    code_pois_favorites_infra.append(" ")
+                else:
+                    code_pois_favorites_infra.append(building[0].code_infra)
+        feature = {"codes_gtsi": code_pois_favorites, "codes_infra":code_pois_favorites_infra}
         return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
     else:
