@@ -31,7 +31,7 @@ before_script:
 script:
 - python manage.py collectstatic --noinput
 - python manage.py test | yes
-- coverage run --source='.' manage.py test espolguide_app|yes
+- coverage run --source='.' manage.py test espolguide_app
 
 after_success:
 - curl -s https://codecov.io/bash | bash -s - -t $CODECOV || echo "Codecov did not collect coverage reports"
