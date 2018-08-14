@@ -7,8 +7,6 @@ from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
 from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav, beautify_name
 from .models import Buildings, Users, Favorites, Salons
-import numpy as np
-import cv2
 
 
 def obtain_buildings(request):
@@ -81,7 +79,7 @@ def alternative_names(request):
         if (code_gtsi is not None and code_gtsi != ""):
             info_list.append(building.code_gtsi)
         alternative_names = building.alternative_names
-        if ( alternative_names is not None and alternative_names != ""):
+        if  alternative_names is not None and alternative_names != "":
             names = alternative_names.strip().split(",")
             for name in names:
                 info_list.append(name)
@@ -188,14 +186,16 @@ def favorites(request):
         if len(user) > 0:
             if not verify_favorite(code.strip(), user[0].username, code_in):
                 if five_favorites(code.strip(), user[0].username):
-                    building = Buildings.objects.filter(code_gtsi=code.strip(), code_infra=code_in.strip())
+                    building = Buildings.objects.filter(code_gtsi=code.strip(),\
+                     code_infra=code_in.strip())
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
                     favorites.save()
                 else:
                     remove_oldest_fav(user[0].username)
-                    building = Buildings.objects.filter(code_gtsi=code.strip(), code_infra=code_in.strip())
+                    building = Buildings.objects.filter(code_gtsi=code.strip(), \
+                        code_infra=code_in.strip())
                     favorites = Favorites()
                     favorites.id_buildings = building[0]
                     favorites.id_users = user[0]
@@ -282,7 +282,7 @@ def delete_favorite(request):
                     code_pois_favorites_infra.append(" ")
                 else:
                     code_pois_favorites_infra.append(building[0].code_infra)
-        feature = {"codes_gtsi": code_pois_favorites,"codes_infra":code_pois_favorites_infra}
+        feature = {"codes_gtsi": code_pois_favorites, "codes_infra":code_pois_favorites_infra}
         return HttpResponse(json.dumps(feature, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
     else:
