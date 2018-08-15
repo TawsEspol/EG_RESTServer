@@ -37,3 +37,8 @@ script:
 
 after_success:
 - curl -s https://codecov.io/bash | bash -s - -t $CODECOV || echo "Codecov did not collect coverage reports"
+
+notifications:
+  email:
+    mguarand@espol.edu.ec
+    jgorotiz@espol.edu.ec
