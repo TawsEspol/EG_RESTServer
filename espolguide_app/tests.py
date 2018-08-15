@@ -24,6 +24,9 @@ class CasoTest(TestCase):
         rel_path = '../dumps/buildings.json'
         abs_file_path = os.path.join(script_dir, rel_path)
         call_command('loaddata', abs_file_path, verbosity=0) 
+        rel_path = '../dumps/salons.json'
+        abs_file_path = os.path.join(script_dir, rel_path)
+        call_command('loaddata', abs_file_path, verbosity=0) 
         buildings = ["BLOQUE 32A","BLOQUE 32D", "BLOQUE 24A", "BLOQUE 32B", "BLOQUE 31B"]
         for building in buildings:
             building_obj = Buildings.objects.filter(code_gtsi=building)
@@ -50,7 +53,7 @@ class CasoTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_login(self):
-        """Tests that a user can be created, given a username"""
+        """Tests that, given a username, their data is returned"""
         python_dict = {"data": {"username": "usuario_prueba_2"}}
         response = self.client.post('/login/', json.dumps(python_dict), content_type="application/json")
         datos = response.json()
@@ -59,6 +62,17 @@ class CasoTest(TestCase):
         #so we check that the returned json has a length of 1
         self.assertEqual(len(datos),1)
 
+    def test_login_no_user(self):
+        """Tests that a user can be created"""
+        python_dict = {"data": {"username": "new_user"}}
+        response = self.client.post('/login/', json.dumps(python_dict), content_type="application/json")
+        datos = response.json()
+        self.assertEqual(len(datos),1)
+
+    def token_user_test(self):
+        response = self.client.get('/apitokenauth/usuario_prueba_2')
+        datos = response.json()
+        self.assertEqual(len(datos),1)
 
     def test_get_building_centroid(self):
         """Tests that, given a gtsi_code=BLOQUE 15A, it returns the correct coordinates 
@@ -74,6 +88,7 @@ class CasoTest(TestCase):
         """Tests that, given a code_gtsi of a building, a photo of the building is returned"""
         response = self.client.get('/photoBlock/15A')
         self.assertEqual(response.status_code, 302)
+
 
     def test_add_favorites(self):
         """Tests that, given a code_gtsi code of a building and a token of a user, the service 
