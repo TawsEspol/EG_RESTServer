@@ -11,26 +11,65 @@ EspolGuide es un aplicacion que ayudara a todos los estudiantes de ESPOL a ubica
 
 ## Prerequisitos
 
-Antes de iniciar el servidor se debe constar con la instalación de cierto módulos indispensables para correr el servidor. Los módulos y programas que necesitamos tener instalados son:
+Antes de iniciar el servidor se debe constar con la instalación de cierto módulos indispensables para correr el servidor. Debemos seguir los siguientes pasos:
 
 ```sh
-python version 3.6
-django version 2.0.1
-postgis version 2.3
-psycog para python3
-apache version 2
-virtualenv con python 3
+git clone https://github.com/TawsEspol/EG_RESTServer.git
+```
+Cambiar al directorio EGRESTServer y ejecutar el script para instalar las dependencias apt necesarios:
 
+```sh
+./dependencias_apt
 ```
 
-
-## Correr el Servidor
-
-OS X y Linux:
+Luego instalar las dependencias de python:
 
 ```sh
-source env_name/bin/activate
 pip install -r requirements.txt
+```
+
+## Crear Base
+
+Colocar en user el usuario que desee asi como su contraseña
+
+```sh
+sudo -u postgres psql
+CREATE DATBASE espolguide_db;
+CREATE USER user WITH PASSWORD 'password';
+ALTER ROLE user SET client_encoding TO 'utf8';
+ALTER ROLE user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE user SET timezone TO 'UTC';
+GRANT ALL PRIVILEGES ON DATABASE espolguide_db TO user;
+```
+
+Ahora se debe crear un archivo .env en donde colocaremos lo siguiente:
+
+```sh
+SECRET_KEY='' 
+DATABASE_HOST=''
+DATABASE_USER=''
+DATABASE_PASSWORD=''
+DATABASE_NAME='espolguide_db'
+```
+NOTA: 
+- La SECRET_KEY es la que da django cuando se crea un proyecto de django
+- DATABASE_HOST en donde se encuentra alojada la base de datos ("localhost")
+- DATABASE_USER es el usuario que se creo en postgres
+- DATABASE_PASSWORD es la contraseña que se le dio al usuario creado
+
+
+
+## Poblar Base
+
+Para poblar la base, si se cuentan con los shapefiles primero se debe agregar al .env la siguiente linea con la direccion en donde se encuentran el archivo shp a caragr:
+
+```sh
+SHAPES_PATH=''
+```
+
+Luego se debe hacer lo siguiente:
+
+```sh
 python manage.py shell
 ```
 
@@ -39,27 +78,33 @@ python manage.py shell
 >>> load.run()
 ```
 
+
+Si no cuenta con los shapefile se pueden cargar los dumps ya creados con los siguientes comandos
+
+```sh
+python manage.py loaddata dumps/buildings.json
+python manage.py loaddata dumps/salons.json
+```
+
+## Correr las migraciones
+
 ```sh
 python manage.py makemigrations
-```
-
-
-```sh
 python manage.py migrate
 ```
+
+
+
+## Correr el Servidor
+
+OS X y Linux:
+
 
 ```sh
 python manage.py runserver tu_ip_publica:8000
 ```
 
 
-
-## como Agregar tu IP PÚBLICA a nuestro servidor
-
-Conociendo tu IP PÚBLICA solo basta con agregarla en esta línea, en el archivo settings.py.
-![](ip.png)
-
-Nota: La IP PÚBLICA cambia dependiendo de la red en la que se esté conectado.
 
 
 
