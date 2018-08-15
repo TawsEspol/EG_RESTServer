@@ -9,7 +9,7 @@ omit =
     espolguide_app/migrations/*
     espolguide_app/utils.py
     espolguide_app/urls.py
-
+    espolguide/wsgi.py
 
 
 
