@@ -70,6 +70,7 @@ class CasoTest(TestCase):
         self.assertEqual(len(datos),1)
 
     def token_user_test(self):
+        """Tests that, given a username, its token auth regenerates"""
         response = self.client.get('/apitokenauth/usuario_prueba_2')
         datos = response.json()
         self.assertEqual(len(datos),1)
