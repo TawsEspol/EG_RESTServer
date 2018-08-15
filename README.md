@@ -61,7 +61,7 @@ NOTA:
 
 ## Poblar Base
 
-Para poblar la base, si se cuentan con los shapefile primero se debe agregar al .env la siguiente linea con la direccion en donde se encuentran el archivo shp a caragr:
+Para poblar la base, si se cuentan con los shapefiles primero se debe agregar al .env la siguiente linea con la direccion en donde se encuentran el archivo shp a caragr:
 
 ```sh
 SHAPES_PATH=''
