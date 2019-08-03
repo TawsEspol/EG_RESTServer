@@ -1,0 +1,15 @@
+ZONA,CÓDIGO VIEJO,EDIFICIO/AREA,NOMBRE DEL EDIFICACIÓN/ÁREA,NIVEL,TIPO DE ESPACIO ,DETALLE DEL ESPACIO,IDENTIFICADOR DE ESPACIO,SECUENCIA,ETIQUETA
+12,-,H,Aulas FIMCP,0,Auditorio,Auditorio FIMCP,U,1,U001
+12,-,H,Aulas FIMCP,1,Aula,Sala de Post Grado FIMCP,A,6,A106
+12,-,G,Biblioteca,1,Biblioteca,Biblioteca FIMCP,BIBLIOTECA,1,BIBLIOTECA
+12,-,L,STEM,0,Aula,1,A,1,A001
+12,-,L,STEM,0,Aula,2,A,2,A002
+12,-,L,STEM,0,Aula,3,A,3,A003
+12,-,L,STEM,0,Aula,4,A,4,A004
+12,-,L,STEM,0,Aula,5,A,5,A005
+12,-,L,STEM,0,Aula,6,A,6,A006
+12,-,L,STEM,0,Oficina,Decanato STEM,O,1,O001
+12,-,L,STEM,0,Oficina,Decano Post Grado ,O,2,O002
+12,-,L,STEM,0,Sala de Reuniones,Sala de reuniones decanato Post Grado,S,1,S001
+12,-,L,STEM,0,Oficina,Decano Investigación FIMCP,O,3,O003
+12,-,L,STEM,1,Sala de Reuniones,Estudiantes de Maestría,S,4,S104
