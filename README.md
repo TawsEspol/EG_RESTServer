@@ -87,6 +87,7 @@ python manage.py loaddata dumps/salons.json
 ```
 
 ## Correr las migraciones
+Primero, borrar todos los archivos de migraciones.
 
 ```sh
 python manage.py makemigrations

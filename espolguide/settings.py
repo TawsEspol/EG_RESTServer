@@ -26,7 +26,7 @@ read_dotenv(os.path.join(BASE_DIR, '.env'))
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 
 ALLOWED_HOSTS = ["*"]
@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'espolguide_app',
     'rest_framework',
     'rest_framework.authtoken',
+    'leaflet',
 ]
 
 
@@ -82,6 +83,7 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -116,7 +118,7 @@ WSGI_APPLICATION = 'espolguide.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
-        'NAME': os.getenv('DATABASE_NAME'),
+        'NAME': "espolguide_db_prueba",#os.getenv('DATABASE_NAME'),
         'USER': os.getenv('DATABASE_USER'),
         'PASSWORD': os.getenv('DATABASE_PASSWORD'),
         'HOST': os.getenv('DATABASE_HOST'),
@@ -174,3 +176,8 @@ STATICFILES_DIRS = (
     #'/home/belen/github/EG_RESTServer/espolguide_app/static/img',
     #'/home/manager/EG_RESTServer/espolguide_app/static/img',
 )
+
+LEAFLET_CONFIG = {
+    'DEFAULT_CENTER': (-2.1458006,-79.96607),
+    'DEFAULT_ZOOM' : 16,
+}
