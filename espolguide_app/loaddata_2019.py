@@ -57,28 +57,29 @@ def load_salons():
 		file.readline()
 		for line in file:
 			data = line.strip().split(",")
-			if(len(data)<10):
-				#means the salon has no tag
-				continue
-			zone_num = data[0]
-			building_let = data[2].upper()
-			building_code = zone_num+building_let
-			tag = building_code+"-"+data[9] #Ex: 9A-U001
-			salon_type = data[5].lower()
-			if(salon_type=="aula" or salon_type == "oficina"):
-				salon_detail = tag
-			elif(salon_type.lower() not in EXCEPTIONS):
-				salon_detail = data[6].capitalize()
+			data = [i for i in data if i] 
+			if(len(data)==10):
+				zone_num = data[0]
+				building_let = data[2].upper()
+				building_code = zone_num+building_let
+				tag = building_code+"-"+data[9] #Ex: 9A-U001
+				salon_type = data[5].lower()
+				if(salon_type=="aula" or salon_type == "oficina"):
+					salon_detail = tag
+				elif(salon_type.lower() not in EXCEPTIONS):
+					salon_detail = data[6].capitalize()
+				else:
+					salon_detail = data[6]
+				#Obtain the building object 
+				building = Buildings.objects.filter(code_gtsi=building_code)
+				if (len(building) == 1):
+					building = building[0] #Get the first element, because filter returns a list
+					salon = Salons(name_espol=salon_detail, building=building, salon_type=salon_type, tag=tag)
+					salon.save() #save the salon object
+				else:
+					print("Para el salon "+salon_detail+", la lista de edificion tiene longitud "+str(len(building)))
 			else:
-				salon_detail = data[6]
-			#Obtain the building object 
-			building = Buildings.objects.filter(code_gtsi=building_code)
-			if (len(building) == 1):
-				building = building[0] #Get the first element, because filter returns a list
-				salon = Salons(name_espol=salon_detail, building=building, salon_type=salon_type, tag=tag)
-				salon.save() #save the salon object
-			else:
-				print("Para el salon "+salon_detail+", la lista de edificion tiene longitud "+str(len(building)))
+				print("No tiene etiqueta")
 		file.close()
 
 def run():
