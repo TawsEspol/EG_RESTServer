@@ -94,6 +94,14 @@ python manage.py loaddata dumps/buildings.json
 python manage.py loaddata dumps/salons.json
 ```
 
+## Correr las migraciones
+Primero, borrar todos los archivos de migraciones.
+
+```sh
+python manage.py makemigrations
+python manage.py migrate
+```
+
 
 ## Correr el Servidor
 

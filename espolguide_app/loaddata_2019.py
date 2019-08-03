@@ -57,36 +57,35 @@ def load_salons():
 		file.readline()
 		for line in file:
 			data = line.strip().split(",")
-			data = [i for i in data if i] 
-			if(len(data)==10):
-				zone_num = data[0]
-				building_let = data[2].upper()
-				building_code = zone_num+building_let
-				tag = building_code+"-"+data[9] #Ex: 9A-U001
-				salon_type = data[5].lower()
-				if(salon_type=="aula" or salon_type == "oficina"):
-					salon_detail = tag
-				elif(salon_type.lower() not in EXCEPTIONS):
-					salon_detail = data[6].capitalize()
-				else:
-					salon_detail = data[6]
-				#Obtain the building object 
-				building = Buildings.objects.filter(code_gtsi=building_code)
-				if (len(building) == 1):
-					building = building[0] #Get the first element, because filter returns a list
-					salon = Salons(name_espol=salon_detail, building=building, salon_type=salon_type, tag=tag)
-					salon.save() #save the salon object
-				else:
-					print("Para el salon "+salon_detail+", la lista de edificion tiene longitud "+str(len(building)))
+			if(len(data)<10):
+				#means the salon has no tag
+				continue
+			zone_num = data[0]
+			building_let = data[2].upper()
+			building_code = zone_num+building_let
+			tag = building_code+"-"+data[9] #Ex: 9A-U001
+			salon_type = data[5].lower()
+			if(salon_type=="aula" or salon_type == "oficina"):
+				salon_detail = tag
+			elif(salon_type.lower() not in EXCEPTIONS):
+				salon_detail = data[6].capitalize()
 			else:
-				print("No tiene etiqueta")
+				salon_detail = data[6]
+			#Obtain the building object 
+			building = Buildings.objects.filter(code_gtsi=building_code)
+			if (len(building) == 1):
+				building = building[0] #Get the first element, because filter returns a list
+				salon = Salons(name_espol=salon_detail, building=building, salon_type=salon_type, tag=tag)
+				salon.save() #save the salon object
+			else:
+				print("Para el salon "+salon_detail+", la lista de edificion tiene longitud "+str(len(building)))
 		file.close()
 
 def run():
 	print("Empezando a cargar zonas")
-	load_unities()
+	#load_unities()
 	print("Empezando a cargar edificios")
-	load_buildings()
+	#load_buildings()
 	print("Empezando a cargar salones")
 	print("Cargando salones")
 	load_salons()
