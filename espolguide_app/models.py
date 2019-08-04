@@ -2,8 +2,6 @@
 import datetime
 from django.contrib.gis.db import models
 from django.conf import settings
-from django.contrib.auth.models import BaseUserManager
-from django.contrib.auth.models import UserManager
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.user')
@@ -19,7 +17,7 @@ class Unities(models.Model):
     def __str__(self):
         return self.name
     class Meta:
-        verbose_name = "Zones"
+        verbose_name = "Zone"
 
 class Buildings(models.Model):
     """Model for a building in a campus. A building has salons like offices,
@@ -40,7 +38,7 @@ class Buildings(models.Model):
     def __str__(self):
         return self.name_espol
     class Meta:
-        verbose_name = "Buildings"
+        verbose_name = "Building"
 
 
 class Salons(models.Model):
@@ -60,7 +58,7 @@ class Salons(models.Model):
 
 class Users(models.Model):
     """User for app for validate with tokens"""
-    REQUIRED_FIELDS = ("email",)
+    REQUIRED_FIELDS = ("user",)
     USERNAME_FIELD = "username"
     username = models.CharField(max_length=100, unique=True)
     password = models.CharField(max_length=64, default=None)
@@ -68,13 +66,13 @@ class Users(models.Model):
     USERNAME_FIELD = 'username'
     is_anonymous = False
     is_authenticated = False
-    objects = UserManager()
+    objects = models.Manager()
 
     # Returns the string representation of the model.
     def __str__(self):
         return self.username
     class Meta:
-        verbose_name = "Users"
+        verbose_name = "User"
 
 class Favorites(models.Model):
     """Model for save favorites POIs"""
@@ -83,4 +81,4 @@ class Favorites(models.Model):
     time_of_create = models.DateTimeField(auto_now_add=True)
     objects = models.Manager()
     class Meta:
-        verbose_name = "Favorites"
+        verbose_name = "Favorite"
