@@ -8,3 +8,4 @@ coverage
 opencv-python
 numpy
 codecov
+django-leaflet

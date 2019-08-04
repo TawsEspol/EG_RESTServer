@@ -58,6 +58,14 @@ NOTA:
 - DATABASE_PASSWORD es la contraseña que se le dio al usuario creado
 
 
+## Correr las migraciones
+Primero, borrar todos los archivos de migraciones.
+
+```sh
+python manage.py makemigrations
+python manage.py migrate
+```
+
 
 ## Poblar Base
 
@@ -85,14 +93,6 @@ Si no cuenta con los shapefile se pueden cargar los dumps ya creados con los sig
 python manage.py loaddata dumps/buildings.json
 python manage.py loaddata dumps/salons.json
 ```
-
-## Correr las migraciones
-
-```sh
-python manage.py makemigrations
-python manage.py migrate
-```
-
 
 
 ## Correr el Servidor
