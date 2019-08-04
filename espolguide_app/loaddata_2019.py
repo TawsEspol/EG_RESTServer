@@ -84,9 +84,9 @@ def load_salons():
 
 def run():
 	print("Empezando a cargar zonas")
-	#load_unities()
+	load_unities()
 	print("Empezando a cargar edificios")
-	#load_buildings()
+	load_buildings()
 	print("Empezando a cargar salones")
 	print("Cargando salones")
 	load_salons()

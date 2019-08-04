@@ -102,7 +102,6 @@ python manage.py makemigrations
 python manage.py migrate
 ```
 
-
 ## Correr el Servidor
 
 OS X y Linux:
