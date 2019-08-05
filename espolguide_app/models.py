@@ -9,7 +9,7 @@ AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.user')
 class Unities(models.Model):
     """Model for an academic unit in the campus. Goes for faculties, institutes,
      libraries, management units and academic clubs"""
-    code = models.CharField(max_length=10, verbose_name="code")
+    code = models.CharField(max_length=10, verbose_name="code", default=None)
     name = models.CharField(max_length=250)
     description = models.CharField(max_length=250, null=True, blank=True)
     objects = models.Manager()
@@ -47,7 +47,7 @@ class Salons(models.Model):
     name_espol = models.CharField(max_length=250, verbose_name="detail")
     building = models.ForeignKey(Buildings, on_delete=models.CASCADE)
     salon_type = models.CharField(max_length=60, null=True, blank=True)
-    tag = models.CharField(max_length=60)
+    tag = models.CharField(max_length=60, default=None)
     objects = models.Manager()
 
     def __str__(self):
