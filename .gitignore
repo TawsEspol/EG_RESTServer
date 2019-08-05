@@ -115,15 +115,11 @@ my_venv/*
 .mypy_cache/
 
 #staticfiles
-*/static
-espolguide_app/static
-static
+espolguide_app/static/
+static/
 
 
 #migrations
-espolguide_app/migrations/*
-espolguide_app/migrations/
-migrations/
 
 #settings file
 espolguide/settings.py
