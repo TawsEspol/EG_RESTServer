@@ -120,6 +120,7 @@ static/
 
 
 #migrations
+espolguide_app/migrations
 
 #settings file
 espolguide/settings.py
