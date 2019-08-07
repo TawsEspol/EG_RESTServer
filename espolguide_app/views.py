@@ -2,11 +2,11 @@
 """Views, archivo para el backend del servidor"""
 import json
 from rest_framework_jwt.settings import api_settings
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, HttpResponseBadRequest
 from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
-from .utils import get_centroid, verify_favorite, five_favorites, remove_oldest_fav, beautify_name
-from .models import Buildings, Users, Favorites, Salons
+from .utils import *
+from .models import Buildings, Users, Favorites, Salons, Notifications
 
 
 def obtain_buildings(request):
@@ -287,3 +287,38 @@ def delete_favorite(request):
         , content_type='application/json')
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
+
+
+def notifications_per_user(request, user_token):
+    """Service that returns the information of all the notification of a user, given by user_id"""
+    if request.method == 'GET':
+        count = 1
+        info_list = []
+        #get the user object
+        user = Users.objects.filter(token=user_token)
+        if (len(user) == 1):
+            #filter notifications by user_id
+            notifications = Notifications.objects.filter(id_user = user[0].id)
+            notifs_list = []
+
+            for notification in notifications:
+                #add each notification to a dictionary
+                dictionary = {"notification_id":notification.id, "time_unit" : notification.time_unit,"value" : notification.value,
+                "event_ts" : notification.event_ts, "event_title":notification.event_title, "notification_ts": notification.notification_ts}
+                notifs_list.append(dictionary)
+
+            response = {"notifications":notifs_list}
+            return HttpResponse(json.dumps(response, ensure_ascii=False, default=date_converter).encode("utf-8"),
+                                content_type="application/json")
+        else:
+            return HttpResponseNotFound('<h1>Not Found</h1>') 
+    else:
+        return HttpResponseBadRequest('<h1>Invalid request</h1>')      
+
+
+def update_notification(request, notification_id):
+    """Service that updates the data of a notification. Specifically, time_unit and value."""
+    if request.method == 'POST':
+        notification = Notifications.objects.get(id = notification_id)
+    else:
+        return HttpResponseBadRequest('<h1>Invalid request</h1>')      
