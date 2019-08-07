@@ -123,5 +123,5 @@ static/
 espolguide_app/migrations
 
 #settings file
-espolguide/settings.py
+#espolguide/settings.py
 data/
