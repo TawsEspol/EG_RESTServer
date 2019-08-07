@@ -1,6 +1,12 @@
 """Function for views"""
 from .models import Buildings, Users, Favorites
+import json 
+import datetime
 
+def date_converter(o):
+    format = "%Y/%m/%d %H:%M:%S"
+    if isinstance(o, datetime.datetime):
+        return o.strftime(format)
 
 
 def get_centroid(vertexes):

@@ -1,5 +1,5 @@
 from django.contrib.gis import admin
-from .models import Users, Buildings, Unities, Salons, Favorites
+from .models import *
 from leaflet.admin import LeafletGeoAdmin
 
 admin.site.site_header = "ESPOLGuide Admin";
@@ -16,5 +16,7 @@ admin.site.register(Buildings, BuildingsAdmin)
 admin.site.register(Unities)
 admin.site.register(Salons)
 admin.site.register(Favorites)
+admin.site.register(Notifications)
+
 
 
