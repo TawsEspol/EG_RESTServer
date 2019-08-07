@@ -2,9 +2,20 @@
 import datetime
 from django.contrib.gis.db import models
 from django.conf import settings
+from django.utils import timezone
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.user')
+MINUTES = 0
+HOURS = 1
+DAYS = 2
+
+TIME_UNITS_CHOICES = (
+    (MINUTES, "minutos"),
+    (HOURS, "horas"),
+    (DAYS, "días"),
+)
+
 
 class Unities(models.Model):
     """Model for an academic unit in the campus. Goes for faculties, institutes,
@@ -70,7 +81,7 @@ class Users(models.Model):
 
     # Returns the string representation of the model.
     def __str__(self):
-        return self.username
+        return self.username + " " + str(self.id)
     class Meta:
         verbose_name = "User"
 
@@ -82,3 +93,14 @@ class Favorites(models.Model):
     objects = models.Manager()
     class Meta:
         verbose_name = "Favorite"
+
+class Notifications(models.Model):
+    """Model for PUSH notifications to be sent to the mobile app"""
+    event_id = models.CharField(max_length=300, default=None)
+    time_unit = models.IntegerField(choices=TIME_UNITS_CHOICES, default=MINUTES)
+    value = models.PositiveSmallIntegerField()
+    event_ts = models.DateTimeField(default=timezone.now) 
+    event_title = models.CharField(max_length=300, default=None)
+    notification_ts = models.DateTimeField(null=True, blank=True)
+    id_user = models.ForeignKey(Users, on_delete=models.CASCADE, default=None)
+
