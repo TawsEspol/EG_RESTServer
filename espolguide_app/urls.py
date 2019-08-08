@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^notification/', views.update_create_notification),
     url(r'^$', RedirectView.as_view(url='/admin')),
 
+
 ]
 
