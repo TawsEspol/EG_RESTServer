@@ -10,7 +10,6 @@ from .models import Buildings, Users, Favorites, Salons, Notifications
 from datetime import datetime
 
 
-
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
