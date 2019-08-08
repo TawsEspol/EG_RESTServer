@@ -19,5 +19,6 @@ urlpatterns = [
     url(r'^user/notifications/', views.notifications_per_user),
     url(r'^notification/', views.update_create_notification),
     url(r'^deleteNotification/', views.delete_notification),
+
 ]
 
