@@ -2,6 +2,8 @@
 from django.conf.urls import  url
 from rest_framework_jwt.views import obtain_jwt_token
 from . import views
+from django.views.generic.base import RedirectView
+
 APP_NAME = 'espolguide_app'
 urlpatterns = [
     url(r'^obtainBuildings/', views.obtain_buildings),
@@ -14,7 +16,8 @@ urlpatterns = [
     url(r'^coordinates/', views.get_building_centroid),
     url(r'^deleteFavorite/', views.delete_favorite),
     url(r'^user/notifications/', views.notifications_per_user),
-    url(r'^notification/', views.update_notification),
+    url(r'^notification/', views.update_create_notification),
+    url(r'^$', RedirectView.as_view(url='/admin')),
 
 
 ]

@@ -7,6 +7,7 @@ from django.contrib.staticfiles import finders
 from django.views.decorators.csrf import csrf_exempt
 from .utils import *
 from .models import Buildings, Users, Favorites, Salons, Notifications
+from datetime import datetime
 
 
 
@@ -318,29 +319,53 @@ def notifications_per_user(request):
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
 @csrf_exempt
-def update_notification(request):
+def update_create_notification(request):
     """Service that updates the data of a notification. Specifically, time_unit and value."""
     if request.method == 'POST':
         response = {}
         datos = str(request.body)
         datos = json.loads(datos[2:-1])
-        notification_id = datos["notification_id"]
         value = datos["value"]
         time_unit = datos["time_unit"]
-        notification = Notifications.objects.get(id = notification_id)
-        event_ts = notification.event_ts
-        new_ts = get_event_datetime(value,time_unit,event_ts)
-        print(new_ts.strftime("%d/%m/%Y %H:%M:%S"))
-        try:
-            notification.notification_ts = new_ts
-            notification.save()
-            response["result"] = notification.id
-            return HttpResponse(json.dumps(response).encode("utf-8"), 
-                content_type="application/json")
-        except ValueError:
-            print("Could not update notification")
-            response["result"] = "error"
-            return HttpResponse(json.dumps(response).encode("utf-8"), 
-                content_type="application/json")
+
+        if("notification_id" in datos):
+            #means there is a notification, and it should be updated
+            notification_id = datos["notification_id"]
+            notification = Notifications.objects.get(id=notification_id)
+            event_ts = notification.event_ts
+            new_ts = get_event_datetime(value,time_unit,event_ts)
+            print(new_ts.strftime("%d/%m/%Y %H:%M:%S"))
+            try:
+                notification.notification_ts = new_ts
+                notification.save()
+                response["result"] = notification.id
+                return HttpResponse(json.dumps(response).encode("utf-8"), 
+                    content_type="application/json")
+            except ValueError:
+                print("Could not update notification")
+                response["result"] = "error"
+                return HttpResponse(json.dumps(response).encode("utf-8"), 
+                    content_type="application/json")
+        else:
+            #means the notification is going to be created
+            user = Users.objects.filter(token=datos["token"])
+            if (len(user) != 1):
+                return HttpResponseBadRequest('<h1>Invalid request</h1>')
+            else:
+                response = {}
+                notification = Notifications()
+                notification.value = datos["value"]
+                notification.time_unit = datos["time_unit"]
+                event_ts = str_to_datetime(datos["event_ts"])
+                notification.event_ts = event_ts
+                notification.event_title = datos["event_title"]
+                notification.event_id = datos["event_id"]
+                notification.notification_ts = get_event_datetime(datos["value"],datos["time_unit"],event_ts)
+                notification.id_user = user[0]
+                notification.save()
+                response["result"] = notification.id
+                return HttpResponse(json.dumps(response).encode("utf-8"), 
+                    content_type="application/json")
+
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
