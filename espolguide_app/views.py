@@ -327,9 +327,10 @@ def update_notification(request):
         notification_id = datos["notification_id"]
         value = datos["value"]
         time_unit = datos["time_unit"]
-        event_ts = datos["event_ts"]
         notification = Notifications.objects.get(id = notification_id)
+        event_ts = notification.event_ts
         new_ts = get_event_datetime(value,time_unit,event_ts)
+        print(new_ts.strftime("%d/%m/%Y %H:%M:%S"))
         try:
             notification.notification_ts = new_ts
             notification.save()

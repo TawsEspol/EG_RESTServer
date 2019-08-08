@@ -2,6 +2,7 @@
 from .models import Buildings, Users, Favorites
 import json 
 from datetime import datetime, timedelta
+import pytz
 
 FORMAT = "%d/%m/%Y %H:%M:%S"
 
@@ -15,18 +16,18 @@ def get_event_datetime(notification_value, time_unit, event_ts):
     and the time to substract from it. Returns a datetime object."""
     if(time_unit==0):
         #time unit is in minutes
-        notification_ts = datetime.strptime(event_ts,FORMAT) - timedelta(minutes=notification_value)
-        return notification_ts
+        notification_ts = event_ts - timedelta(minutes=notification_value)
+        return notification_ts.replace(tzinfo=pytz.UTC)
 
     elif(time_unit==1):
         #time unit is in hours
-        notification_ts = datetime.strptime(event_ts,FORMAT) - timedelta(hours=notification_value)
-        return notification_ts
+        notification_ts = event_ts - timedelta(hours=notification_value)
+        return notification_ts.replace(tzinfo=pytz.UTC)
 
     elif(time_unit==2):
         #time unit is in days
-        notification_ts = datetime.strptime(event_ts,FORMAT) - timedelta(hours=notification_value)
-        return notification_ts
+        notification_ts = event_ts - timedelta(hours=notification_value)
+        return notification_ts.replace(tzinfo=pytz.UTC)
     
     else:
         return None
