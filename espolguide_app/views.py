@@ -9,6 +9,7 @@ from .utils import *
 from .models import Buildings, Users, Favorites, Salons, Notifications
 from datetime import datetime
 
+
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
@@ -317,6 +318,7 @@ def notifications_per_user(request):
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
 @csrf_exempt
+
 def update_create_notification(request):
     """Service that updates the data of a notification. Specifically, time_unit and value."""
     if request.method == 'POST':
@@ -364,6 +366,5 @@ def update_create_notification(request):
                 response["result"] = notification.id
                 return HttpResponse(json.dumps(response).encode("utf-8"), 
                     content_type="application/json")
-
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
