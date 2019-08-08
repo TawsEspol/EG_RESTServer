@@ -13,7 +13,8 @@ urlpatterns = [
     url(r'^favorites/', views.favorites),
     url(r'^coordinates/', views.get_building_centroid),
     url(r'^deleteFavorite/', views.delete_favorite),
-    url(r'^notifications/(?P<user_token>[\w|\W]*)', views.notifications_per_user),
+    url(r'^user/notifications/', views.notifications_per_user),
+    url(r'^notification/', views.update_notification),
 
 ]
 
