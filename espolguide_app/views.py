@@ -321,7 +321,6 @@ def notifications_per_user(request):
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
 @csrf_exempt
-
 def update_create_notification(request):
     """Service that creates a notification or updates the data of a notification. 
     Specifically, time_unit and value."""
@@ -374,6 +373,7 @@ def update_create_notification(request):
                 response["notification_ts"] = notification.notification_ts
                 return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
                     content_type="application/json")
+
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
