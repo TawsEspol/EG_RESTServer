@@ -317,6 +317,7 @@ def notifications_per_user(request):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
+@csrf_exempt
 def update_create_notification(request):
     """Service that creates a notification or updates the data of a notification. 
     Specifically, time_unit and value."""
