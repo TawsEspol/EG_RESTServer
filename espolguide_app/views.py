@@ -11,7 +11,6 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 
-
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
@@ -318,6 +317,7 @@ def notifications_per_user(request):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
+
 def update_create_notification(request):
     """Service that creates a notification or updates the data of a notification. 
     Specifically, time_unit and value."""
@@ -331,7 +331,6 @@ def update_create_notification(request):
         if("notification_id" in datos):
             #means there is a notification, and it should be updated
             notification_id = datos["notification_id"]
-            
             try:
                 notification = Notifications.objects.get(id=notification_id)
                 event_ts = notification.event_ts
