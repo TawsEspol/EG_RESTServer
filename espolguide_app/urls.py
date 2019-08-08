@@ -21,5 +21,6 @@ urlpatterns = [
     url(r'^deleteNotification/', views.delete_notification),
 
 
+
 ]
 
