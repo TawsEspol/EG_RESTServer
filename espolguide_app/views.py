@@ -371,6 +371,7 @@ def update_create_notification(request):
                 response["notification_ts"] = notification.notification_ts
                 return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
                     content_type="application/json")
+
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
