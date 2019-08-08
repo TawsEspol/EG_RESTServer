@@ -31,7 +31,6 @@ def get_event_datetime(notification_value, time_unit, event_ts):
     else:
         return None
 
-
 def get_centroid(vertexes):
     """Function for get centroid for shapes"""
     _x_list = [vertex[0] for vertex in vertexes]

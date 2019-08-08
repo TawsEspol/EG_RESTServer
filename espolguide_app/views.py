@@ -9,7 +9,6 @@ from .utils import *
 from .models import Buildings, Users, Favorites, Salons, Notifications
 
 
-
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
@@ -288,6 +287,7 @@ def delete_favorite(request):
         , content_type='application/json')
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
+
 
 @csrf_exempt
 def notifications_per_user(request):

@@ -16,6 +16,5 @@ urlpatterns = [
     url(r'^user/notifications/', views.notifications_per_user),
     url(r'^notification/', views.update_notification),
 
-
 ]
 
