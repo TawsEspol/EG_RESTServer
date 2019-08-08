@@ -11,6 +11,10 @@ def date_converter(o):
     if isinstance(o, datetime):
         return o.strftime(FORMAT)
 
+def str_to_datetime(o):
+    """Returns the datetime object of a string"""
+    return datetime.strptime(o,FORMAT).replace(tzinfo=pytz.UTC)
+
 def get_event_datetime(notification_value, time_unit, event_ts):
     """Returns the new timestamp of a notification, given an event timestamp 
     and the time to substract from it. Returns a datetime object."""
