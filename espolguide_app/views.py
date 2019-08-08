@@ -9,6 +9,7 @@ from .utils import *
 from .models import Buildings, Users, Favorites, Salons, Notifications
 
 
+
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
@@ -288,14 +289,15 @@ def delete_favorite(request):
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
-
-def notifications_per_user(request, user_token):
+@csrf_exempt
+def notifications_per_user(request):
     """Service that returns the information of all the notification of a user, given by user_id"""
-    if request.method == 'GET':
-        count = 1
+    if request.method == 'POST':
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
         info_list = []
         #get the user object
-        user = Users.objects.filter(token=user_token)
+        user = Users.objects.filter(token=datos["token"])
         if (len(user) == 1):
             #filter notifications by user_id
             notifications = Notifications.objects.filter(id_user = user[0].id)
@@ -315,10 +317,29 @@ def notifications_per_user(request, user_token):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
-
-def update_notification(request, notification_id):
+@csrf_exempt
+def update_notification(request):
     """Service that updates the data of a notification. Specifically, time_unit and value."""
     if request.method == 'POST':
+        response = {}
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
+        notification_id = datos["notification_id"]
+        value = datos["value"]
+        time_unit = datos["time_unit"]
+        event_ts = datos["event_ts"]
         notification = Notifications.objects.get(id = notification_id)
+        new_ts = get_event_datetime(value,time_unit,event_ts)
+        try:
+            notification.notification_ts = new_ts
+            notification.save()
+            response["result"] = notification.id
+            return HttpResponse(json.dumps(response).encode("utf-8"), 
+                content_type="application/json")
+        except ValueError:
+            print("Could not update notification")
+            response["result"] = "error"
+            return HttpResponse(json.dumps(response).encode("utf-8"), 
+                content_type="application/json")
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      

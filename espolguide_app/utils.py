@@ -1,12 +1,35 @@
 """Function for views"""
 from .models import Buildings, Users, Favorites
 import json 
-import datetime
+from datetime import datetime, timedelta
+
+FORMAT = "%d/%m/%Y %H:%M:%S"
 
 def date_converter(o):
-    format = "%Y/%m/%d %H:%M:%S"
-    if isinstance(o, datetime.datetime):
-        return o.strftime(format)
+    """Returns datetime object as string"""
+    if isinstance(o, datetime):
+        return o.strftime(FORMAT)
+
+def get_event_datetime(notification_value, time_unit, event_ts):
+    """Returns the new timestamp of a notification, given an event timestamp 
+    and the time to substract from it. Returns a datetime object."""
+    if(time_unit==0):
+        #time unit is in minutes
+        notification_ts = datetime.strptime(event_ts,FORMAT) - timedelta(minutes=notification_value)
+        return notification_ts
+
+    elif(time_unit==1):
+        #time unit is in hours
+        notification_ts = datetime.strptime(event_ts,FORMAT) - timedelta(hours=notification_value)
+        return notification_ts
+
+    elif(time_unit==2):
+        #time unit is in days
+        notification_ts = datetime.strptime(event_ts,FORMAT) - timedelta(hours=notification_value)
+        return notification_ts
+    
+    else:
+        return None
 
 
 def get_centroid(vertexes):
