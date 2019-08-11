@@ -6,6 +6,7 @@ from django.views.generic.base import RedirectView
 
 APP_NAME = 'espolguide_app'
 urlpatterns = [
+    url(r'^$', RedirectView.as_view(url='/admin')),
     url(r'^obtainBuildings/', views.obtain_buildings),
     url(r'^obtainBuildingsInfo/', views.obtain_buildings_info),
     url(r'^alternativeNames/', views.alternative_names),
@@ -17,7 +18,7 @@ urlpatterns = [
     url(r'^deleteFavorite/', views.delete_favorite),
     url(r'^user/notifications/', views.notifications_per_user),
     url(r'^notification/', views.update_create_notification),
-    url(r'^$', RedirectView.as_view(url='/admin')),
+    url(r'^deleteNotification/', views.delete_notification),
 
 
 ]
