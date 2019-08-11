@@ -11,7 +11,6 @@ from datetime import datetime
 from django.core.exceptions import ObjectDoesNotExist
 
 
-
 def obtain_buildings(request):
     """Service that returns the information of all the buildings (including geometry)"""
     dictionary = {}
