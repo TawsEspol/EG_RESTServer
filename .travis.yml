@@ -23,7 +23,7 @@ install:
 - pip install -r requirements.txt
 before_script:
 - psql -c "CREATE USER guiders WITH PASSWORD '0000';" -U postgres
-- psql -c 'create database espolguide_db_integradora;' -U postgres
+- psql -c 'create database espolguide_db;' -U postgres
 - psql -c "ALTER ROLE guiders SUPERUSER;" -U postgres
 - psql -c "GRANT ALL PRIVILEGES ON DATABASE espolguide_db TO guiders;" -U postgres
 - sudo -u postgres psql -c "CREATE EXTENSION postgis; CREATE EXTENSION postgis_topology;"
