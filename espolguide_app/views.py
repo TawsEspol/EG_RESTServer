@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from .utils import *
 from .models import Buildings, Users, Favorites, Salons, Notifications
 from datetime import datetime
+from django.core.exceptions import ObjectDoesNotExist
 
 
 def obtain_buildings(request):
@@ -289,7 +290,7 @@ def delete_favorite(request):
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
-@csrf_exempt
+
 def notifications_per_user(request):
     """Service that returns the information of all the notification of a user, given by user_id"""
     if request.method == 'POST':
@@ -317,9 +318,10 @@ def notifications_per_user(request):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
-@csrf_exempt
+
 def update_create_notification(request):
-    """Service that updates the data of a notification. Specifically, time_unit and value."""
+    """Service that creates a notification or updates the data of a notification. 
+    Specifically, time_unit and value."""
     if request.method == 'POST':
         response = {}
         datos = str(request.body)
@@ -330,17 +332,18 @@ def update_create_notification(request):
         if("notification_id" in datos):
             #means there is a notification, and it should be updated
             notification_id = datos["notification_id"]
-            notification = Notifications.objects.get(id=notification_id)
-            event_ts = notification.event_ts
-            new_ts = get_event_datetime(value,time_unit,event_ts)
-            print(new_ts.strftime("%d/%m/%Y %H:%M:%S"))
             try:
+                notification = Notifications.objects.get(id=notification_id)
+                event_ts = notification.event_ts
+                new_ts = get_event_datetime(value,time_unit,event_ts)
                 notification.notification_ts = new_ts
                 notification.save()
-                response["result"] = notification.id
-                return HttpResponse(json.dumps(response).encode("utf-8"), 
+                response["result"] = "success"
+                response["notification_id"] = notification.id
+                response["notification_ts"] = notification.notification_ts
+                return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
                     content_type="application/json")
-            except ValueError:
+            except ObjectDoesNotExist:
                 print("Could not update notification")
                 response["result"] = "error"
                 return HttpResponse(json.dumps(response).encode("utf-8"), 
@@ -362,9 +365,32 @@ def update_create_notification(request):
                 notification.notification_ts = get_event_datetime(datos["value"],datos["time_unit"],event_ts)
                 notification.id_user = user[0]
                 notification.save()
-                response["result"] = notification.id
-                return HttpResponse(json.dumps(response).encode("utf-8"), 
+                response["result"] = "success"
+                response["notification_id"] = notification.id
+                response["notification_ts"] = notification.notification_ts
+                return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
                     content_type="application/json")
 
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
+
+
+def delete_notification(request):
+    """View for deleting a notification object, given its id."""
+    if request.method == 'POST':
+        response = {}
+        datos = str(request.body)
+        datos = json.loads(datos[2:-1])
+        notification_id = datos["notification_id"]
+        try:
+            instance = Notifications.objects.get(id=notification_id)
+            instance.delete()
+            response["result"] = "success"
+        except ObjectDoesNotExist:
+            print("Notification does not exists. Could not delete it.")
+            response["result"] = "failure"
+        
+        return HttpResponse(json.dumps(response).encode("utf-8"), 
+                    content_type="application/json")
+    else:
+        return HttpResponseBadRequest('<h1>Invalid request</h1>')
