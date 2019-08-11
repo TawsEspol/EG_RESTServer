@@ -70,16 +70,6 @@ class CasoTest(TestCase):
         datos = response.json()
         self.assertEqual(len(datos),1)
 
-    def test_get_building_centroid(self):
-        """Tests that, given a gtsi_code=11A, it returns the correct coordinates 
-        of its centroid lat:-2.14716904758766, long:-79.96780304424358 """
-        python_dict = {"code_gtsi": "11A", "code_infra":"11A"}
-        response = self.client.post('/coordinates/', json.dumps(python_dict), content_type="application/json")
-        response = response.json()
-        expected_result = {'lat':-2.1446204723353177,'long':-79.96768222340235}
-        result = response["lat"]==expected_result["lat"] and response["long"]==expected_result["long"]
-        self.assertEqual(result, True)
-
     def test_show_photo(self):
         """Tests that, given a code_gtsi of a building, a photo of the building is returned"""
         response = self.client.get('/photoBlock/11A')
