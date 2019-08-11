@@ -291,7 +291,7 @@ def delete_favorite(request):
     else:
         return HttpResponseNotFound('<h1>Invalid request</h1>')
 
-
+@csrf_exempt
 def notifications_per_user(request):
     """Service that returns the information of all the notification of a user, given by user_id"""
     if request.method == 'POST':
@@ -319,7 +319,7 @@ def notifications_per_user(request):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
-
+@csrf_exempt
 def update_create_notification(request):
     """Service that creates a notification or updates the data of a notification. 
     Specifically, time_unit and value."""
@@ -375,7 +375,7 @@ def update_create_notification(request):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
-
+@csrf_exempt
 def delete_notification(request):
     """View for deleting a notification object, given its id."""
     if request.method == 'POST':
