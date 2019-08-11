@@ -20,7 +20,5 @@ urlpatterns = [
     url(r'^notification/', views.update_create_notification),
     url(r'^deleteNotification/', views.delete_notification),
 
-
-
 ]
 

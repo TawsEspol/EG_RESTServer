@@ -375,6 +375,7 @@ def update_create_notification(request):
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
 
+
 def delete_notification(request):
     """View for deleting a notification object, given its id."""
     if request.method == 'POST':
