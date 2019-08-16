@@ -75,4 +75,8 @@ def beautify_name(name):
         name = name.capitalize()
     return name
 
-
+def find_point(x1, y1, x2, y2, x, y): 
+    if (x > x1 and x < x2 and y > y1 and y < y2): 
+        return True
+    else : 
+        return False
