@@ -313,9 +313,10 @@ def notifications_per_user(request):
             return HttpResponse(json.dumps(response, ensure_ascii=False, default=date_converter).encode("utf-8"),
                                 content_type="application/json")
         else:
-            return HttpResponseNotFound('<h1>Not Found</h1>') 
+            return HttpResponseNotFound("<h1>Not Found</h1>") 
     else:
-        return HttpResponseBadRequest('<h1>Invalid request</h1>')      
+        return HttpResponseBadRequest("<h1>Invalid request</h1>")      
+
 
 @csrf_exempt
 def update_create_notification(request):
@@ -323,52 +324,58 @@ def update_create_notification(request):
     Specifically, time_unit and value."""
     if request.method == 'POST':
         response = {}
-        datos = str(request.body)
-        datos = json.loads(datos[2:-1])
-        value = datos["value"]
-        time_unit = datos["time_unit"]
+        datos_str = str(request.body, encoding="utf8")
+        datos = json.loads(datos_str)
+        value = int(datos["value"])
+        time_unit = int(datos["time_unit"])
 
-        if("notification_id" in datos):
-            #means there is a notification, and it should be updated
-            notification_id = datos["notification_id"]
-            try:
-                notification = Notifications.objects.get(id=notification_id)
-                event_ts = notification.event_ts
-                new_ts = get_event_datetime(value,time_unit,event_ts)
-                notification.notification_ts = new_ts
-                notification.save()
-                response["result"] = "success"
-                response["notification_id"] = notification.id
-                response["notification_ts"] = notification.notification_ts
-                return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
-                    content_type="application/json")
-            except ObjectDoesNotExist:
-                print("Could not update notification")
-                response["result"] = "error"
-                return HttpResponse(json.dumps(response).encode("utf-8"), 
-                    content_type="application/json")
+        if("token" not in datos):
+            return HttpResponseBadRequest("<h1>Invalid request</h1>")
         else:
-            #means the notification is going to be created
             user = Users.objects.filter(token=datos["token"])
-            if (len(user) != 1):
-                return HttpResponseBadRequest('<h1>Invalid request</h1>')
-            else:
-                response = {}
-                notification = Notifications()
-                notification.value = datos["value"]
-                notification.time_unit = datos["time_unit"]
-                event_ts = str_to_datetime(datos["event_ts"])
-                notification.event_ts = event_ts
-                notification.event_title = datos["event_title"]
-                notification.event_id = datos["event_id"]
-                notification.notification_ts = get_event_datetime(datos["value"],datos["time_unit"],event_ts)
-                notification.id_user = user[0]
-                notification.save()
-                response["result"] = "success"
-                response["notification_id"] = notification.id
-                response["notification_ts"] = notification.notification_ts
-                return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
-                    content_type="application/json")
+            #Verify that user with the given token exists
+            if (len(user) == 1):
+
+                if("notification_id" in datos):
+                    #means there is a notification, and it should be updated
+                    notification_id = datos["notification_id"]
+                    try:
+                        notification = Notifications.objects.get(id=notification_id)
+                        event_ts = notification.event_ts
+                        #recalculate timestamp of the notification
+                        new_ts = get_event_datetime(value,time_unit,event_ts)
+                        notification.value = value
+                        notification.time_unit = time_unit
+                        notification.notification_ts = new_ts
+                        notification.save()
+                        response["result"] = "success"
+                        response["notification_id"] = notification.id
+                        response["notification_ts"] = notification.notification_ts
+                        return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
+                            content_type="application/json")
+                    except ObjectDoesNotExist:
+                        print("Could not update notification")
+                        response["result"] = "error"
+                        return HttpResponse(json.dumps(response).encode("utf-8"), 
+                            content_type="application/json")
+                else:
+                    #means the notification is going to be created
+                    response = {}
+                    notification = Notifications()
+                    notification.value = datos["value"]
+                    notification.time_unit = datos["time_unit"]
+                    event_ts = str_to_datetime(datos["event_ts"])
+                    notification.event_ts = event_ts
+                    notification.event_title = datos["event_title"]
+                    notification.event_id = datos["event_id"]
+                    notification.notification_ts = get_event_datetime(datos["value"],datos["time_unit"],event_ts)
+                    notification.id_user = user[0]
+                    notification.save()
+                    response["result"] = "success"
+                    response["notification_id"] = notification.id
+                    response["notification_ts"] = notification.notification_ts
+                    return HttpResponse(json.dumps(response, default=date_converter).encode("utf-8"), 
+                        content_type="application/json")
 
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')      
@@ -381,15 +388,21 @@ def delete_notification(request):
         datos = str(request.body)
         datos = json.loads(datos[2:-1])
         notification_id = datos["notification_id"]
-        try:
-            instance = Notifications.objects.get(id=notification_id)
-            instance.delete()
-            response["result"] = "success"
-        except ObjectDoesNotExist:
-            print("Notification does not exists. Could not delete it.")
-            response["result"] = "failure"
-        
-        return HttpResponse(json.dumps(response).encode("utf-8"), 
-                    content_type="application/json")
+        user = Users.objects.filter(token=datos["token"])
+        #Verify that user with the given token exists
+        if (len(user) == 1):
+            try:
+                instance = Notifications.objects.get(id=notification_id)
+                instance.delete()
+                response["result"] = "success"
+            except ObjectDoesNotExist:
+                print("Notification does not exists. Could not delete it.")
+                response["result"] = "failure"
+            
+            return HttpResponse(json.dumps(response).encode("utf-8"), 
+                        content_type="application/json")
+        else:
+            return HttpResponseNotFound('<h1>Not Found</h1>')
+
     else:
         return HttpResponseBadRequest('<h1>Invalid request</h1>')
