@@ -133,8 +133,7 @@ def login(request):
     datos = json.loads(str(request.body)[2:-1])
     usuario = Users.objects.filter(username=datos.get("data").get("username"))
     if len(usuario) > 0:
-        user = Users.objects.get(username=datos.get("data").get("username"),\
-         password=datos.get("data").get("username"))
+        user = usuario[0]
         datos_retornar = {"access-token": user.token}
         return HttpResponse(json.dumps(datos_retornar, ensure_ascii=False).encode("utf-8")\
         , content_type='application/json')
@@ -307,7 +306,7 @@ def notifications_per_user(request):
             for notification in notifications:
                 #add each notification to a dictionary
                 dictionary = {"notification_id":notification.id, "time_unit" : notification.time_unit,"value" : notification.value,
-                "event_ts" : notification.event_ts, "event_title":notification.event_title, "notification_ts": notification.notification_ts}
+                "event_ts" : notification.event_ts, "event_id":notification.event_id, "event_title":notification.event_title, "notification_ts": notification.notification_ts}
                 notifs_list.append(dictionary)
 
             response = {"notifications":notifs_list}
