@@ -9,14 +9,17 @@ class BuildingsAdmin(LeafletGeoAdmin):
 	list_display = ('unity_name','name_espol','code_gtsi',)
 	list_filter = ('unity_name',)
 	
-	
+class NotificationsAdmin(admin.ModelAdmin):
+	list_filter = ('event_title',)
+	list_display = ('id', 'event_title', 'id_user')
+
 # Register your models here.
 admin.site.register(Users)
 admin.site.register(Buildings, BuildingsAdmin)
 admin.site.register(Unities)
 admin.site.register(Salons)
 admin.site.register(Favorites)
-admin.site.register(Notifications)
+admin.site.register(Notifications, NotificationsAdmin)
 
 
 
