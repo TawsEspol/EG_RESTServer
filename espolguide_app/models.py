@@ -3,6 +3,7 @@ import datetime
 from django.contrib.gis.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import AbstractBaseUser
 
 
 AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.user')
@@ -102,5 +103,5 @@ class Notifications(models.Model):
     event_ts = models.DateTimeField(default=timezone.now) 
     event_title = models.CharField(max_length=300, default=None)
     notification_ts = models.DateTimeField(null=True, blank=True)
-    id_user = models.ForeignKey(Users, on_delete=models.CASCADE, default=None)
+    id_user = models.ForeignKey(Users, on_delete=models.CASCADE, default=None, verbose_name="user")
 
