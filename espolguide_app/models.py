@@ -105,3 +105,5 @@ class Notifications(models.Model):
     notification_ts = models.DateTimeField(null=True, blank=True)
     id_user = models.ForeignKey(Users, on_delete=models.CASCADE, default=None, verbose_name="user")
 
+    class Meta:
+        verbose_name = "Notification"
