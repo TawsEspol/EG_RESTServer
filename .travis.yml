@@ -1,11 +1,10 @@
 language: python
 python:
 - '3.5'
-addons:
-  postgresql: 9.6
-  apt:
-    packages:
-    - postgresql-9.6-postgis-2.3
+
+services:
+  - postgresql
+
 env:
   matrix:
   - DJANGO=2.0.1 DB=postgres
@@ -16,13 +15,21 @@ env:
   - secure: w3NWEvLNZQaP4d9e8d9XmT282z8fv18WzgObzKWlz0zd+nNqFUfsG+mvEAzSAfwFWsPPe3ib9xeJscA8FhFgFIzo0DlSRKLGtYOsPraVjq9TOlGEmKuc4Dtu6qzXSd5aVbfKcdBwVeJlhLTk8jpP6AS2HUfMADZDsDUakqiOtTcj2uf37WcbBkyeFlhaMweusk/t939cAHUPiE+9ahrGE/sCejpdb8De9e/TBcz4hfhji/78CGn06Gg5xLjde9hNAkT8v1pg2Fyic3idsXYb8jyIXI11N16xZIdqXPmZprHqiQp3UmTyAwewtC2CeJiSlF5vnVcdG95awxCPo8XSke5fCCnKZSBXbDCQs9dqGIpd/Ora4Dywzsolz5e2CSeFW6dmlpF/RtI2ctduORBT/gUg9ErmiGBTEZwB9Zq4Hd2d2VfHIAZmAqU8ZPA5ixvZH0qb6v9MwTzeCMuQa1pUQFLdAk3i7X1r4llQHc6EUB0vdcfp/LSnfF8f2bG8hoBsXcGWhzit3un8bXzuI8OljDidWUce/wk/ISqXetRDToQ0kjqb3j8N2soFwq283SjAQkomDyVdkEvuh2A7MKfty02lUK/EOP5dvDDPrAzFnq3m6RgPxPbkCUiwBM2gcU8UbJ5PJjASqimoPQHhpenQwAzzhfhVR0521am8U3Kjnpo=
   - secure: ViLtUHRfVzuLloOKfZWAHdickB2E4/0l9kTIou+wfogyOizjA/nSdVCpO6kp4VdRoonL6Y/4RcMvHqmD4RwTtQC/WfM2MhAUiMZV03UH2/H5lSB189WWl3jzX//dnQQvQ9dBganA/Y62Q10ZNLp0matvkKP2yRwcz33dD2Fi3b+oeX/hhbOgz05q9iIpuHdSvrr6qsaU6F/snZC1RLtmzg7BY9sx1bMpDj2F7kZQPdr/2QcOMG8MbjYjvn2ehHMk7IvYj6fa0In7TWdu5iutlslBXN1DahcTvrMC+HPOTOCz5rTZcp+3pfKBKoUmcscH8glgl9nlRWWHO28kpL03iNlK+G30kIXFEODecbrnDqc6ovvqE6nhuQ+a5Q3NZKWWpBFzxfhIWWflfUMw2D8lbNrzPU5qjVSaV28e3edSvWd3Lt/CSMrjPUmbGWH5sGFdXvupDPj3JZ4yzBzlZCtIZusIBFF9EowlEZmZ1CBrqJ66WiXqBQNGl/XDAjUYfp8LaX2rDMX4G6efPbXeatEli9QLhwMuORkAl7W4353aeUUC8jrNYxvIc9psmSjX7JJWXY0DJkJGgBEbnCS8gJPvI9EjhcSeR3WoV3XjwuhZjMq6TX58wQacxJCp4uEOlrIehJL+iGfQNPanMhpnbMf8EZbW7Y4x2lD9MT2NSXb5puA=
   - secure: vMBtk4TvZ1EKG7zL5Qt8jTuStmj8r+AT2LJgGCWDJxa7G1vtMm/1kJyRrtG2CMxzzB3dkbFGjpC+saY5DsZ5CkIp2dIO1kwXR01e6ytNj0LBCcx+ytX1q7LOp9Pvw5LhFMUifGFcko9Ubu7DhYM8Uk60O45rEOs6WRhhWVOt/lfCSzUHkxoPl/dtEX2ptcvBVi4pTUcpgxsid9Oiw2+kiHHxgyFhq0nwMtee4ahIqASLm2E26J90gMq4VUbTFb2olGucDePrG+OzAGjTqnRrT7KizB9E/pGkzBcAtKLpI6aStiPH8AKFrMgQpaJRxE507JkqtRf0rvn3MFBActW+07Gf9dq66AgNE8Q8E8SeaFy0u4jXmfObxSmufDuV2iIoRjlDkzcLTAI7OuFwnP4iTcyxMrPOsePDecdW1uD1u6lk1ySCnRMA/cFYVYBJydZhqjS5krGQEOG3Tv7oRcY6G/hDCBOO9Mwu77PwzHk7YHx36oEDfR+xtkZirlh++LkBHdeQYcE7yR/S8/gR0mch1FFwpCUzKikeoD590LMXfRETdQNw/hdWnGb9ohREg5rIgp+1QanTZMOfmojTYEZTGFG314En1uUi8DVJJPUPK7PRD/Ju+4JhFQnXipnASeUYF5HV+cNb+HtSQ1dNlOQGQhgSbW68J5lKcorfWM8EKfY=
+
 branches:
   only:
   - development
+
+before_install:
+- sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+- sudo apt-get update
+
 install:
 - pip install -r requirements.txt
+- sudo apt-get install postgresql-10-postgis-2.4 postgresql-10-postgis-scripts
 
 before_script:
+- sudo service postgresql restart
 - psql -c "CREATE USER guiders WITH PASSWORD '0000';" -U postgres
 - psql -c 'create database espolguide_db;' -U postgres
 - psql -c "ALTER ROLE guiders SUPERUSER;" -U postgres
